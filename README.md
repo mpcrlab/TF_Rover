@@ -1,7 +1,7 @@
 # TF_Rover
 Deep Learning Autonomous Vehicle Control with Tensorflow
 
-## DatasetGen
+## RoverCollect
 Collect dataset with rover and save as H5py
 
 ## Frames2Channels
@@ -12,7 +12,6 @@ Train GPU deep learning network and save weights
 
 ## TestModel
 Evaluate model on video data
-
 
 ## RunRover
 Real-time neural network control
