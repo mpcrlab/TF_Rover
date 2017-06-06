@@ -31,7 +31,6 @@ class RoverSimple(Rover):
    	self.paused = True
     	self.controller = Keyboard()
            
-
     def reverse(self):
         self.treads = [-1,-1]
 
@@ -39,16 +38,12 @@ class RoverSimple(Rover):
         self.treads = [0,0]
         self.set_wheel_treads(0,0)
 
- 
-
     def process_video_from_rover(self, jpegbytes, timestamp_10msec):
         window_name = 'Machine Perception and Cognitive Robotics'
         array_of_bytes = np.fromstring(jpegbytes, np.uint8)
         self.image = cv2.imdecode(array_of_bytes, flags=3)
         k = cv2.waitKey(5) & 0xFF
         return self.image
-
-
 
     def eraseFrames(self, count):
         size = len(self.d.angles)
@@ -59,15 +54,12 @@ class RoverSimple(Rover):
         else:
             print("Couldn't delete! List has less than", count, "frames!")
 
-
-
     def displayDashboard(self):
         black = (0,0,0)
 
         self.userInterface.display_message("Rover Battery Percentage: " + str(self.get_battery_percentage()), black, 0,0)
         self.userInterface.display_message("Treads: " + str(self.treads), black, 0, self.userInterface.fontSize*4)
         self.userInterface.display_message("Number of Frames Collected: " + str(len(self.d.angles)), black, 0, self.userInterface.fontSize*7)
-
 
 
     def run(self):
@@ -77,11 +69,9 @@ class RoverSimple(Rover):
         oldTreads = None
         self.setControls()
 
-
         while not self.quit:
             self.displayDashboard()
 
-            
        	    key = self.controller.getActiveKey()
             if key:
                 key = chr(key)
@@ -101,8 +91,6 @@ class RoverSimple(Rover):
 	    if self.paused:
                 self.freeze()
 
-
-
             if self.angle == 135:
                 self.treads = [-1,1]
             elif self.angle == 90:
@@ -110,9 +98,6 @@ class RoverSimple(Rover):
             elif self.angle == 35:
                self.treads = [1,-1]
 
-
-
-           
 
 	    newTreads = self.treads
 	    self.set_wheel_treads(newTreads[0],newTreads[1])
