@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
 get_ipython().magic(u'matplotlib notebook')
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,14 +5,9 @@ import imageio
 import json
 from numpy.matlib import *
 
-
-# In[2]:
-
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
-
-# In[9]:
 
 filename = 'drive.mp4'
 vid = imageio.get_reader(filename,  'ffmpeg')
@@ -47,22 +37,11 @@ for num in nums:
 #     fig.canvas.draw()
 
 
-# In[11]:
-
 Data.shape
-
-
-# In[12]:
 
 t=5
 
-
-# In[13]:
-
 Data_t=np.zeros((Data.shape[0]-t,Data.shape[1],Data.shape[2],t))
-
-
-# In[14]:
 
 for i in range(Data.shape[0]-t):
     print(i)
@@ -74,8 +53,5 @@ for i in range(Data.shape[0]-t):
         frame_stack[:,:,j]=rgb2gray(Data[i-j,:,:,:])
     
     Data_t[i,:,:,:]=frame_stack
-
-
-# In[15]:
 
 Data_t.shape
