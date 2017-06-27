@@ -457,7 +457,7 @@ model = tflearn.DNN(network, checkpoint_path='model_zoo', max_checkpoints=1, ten
 
 
 
-model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=True, batch_size=4, snapshot_step=200,
+model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=True, batch_size=64, snapshot_step=200,
           snapshot_epoch=False, run_id='rover_gray_oneframe' + modelswitch[model_num].__name__)
 
 
