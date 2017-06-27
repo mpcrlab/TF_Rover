@@ -12,7 +12,7 @@ from tflearn.layers.normalization import local_response_normalization, batch_nor
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
 
-model_num = 0
+model_num = 1
 epochs = 150
     
 
@@ -43,6 +43,8 @@ def DNN1(network):
 
 ########################################################
 def Conv1(network):
+    mean, var = tf.nn.moments(network, [0])
+    network = (network-mean)/(tf.sqrt(var)+1e-6)
     network = conv_2d(network, 32, 3, activation='relu', regularizer="L2")
     network = max_pool_2d(network, 2)
     network = local_response_normalization(network)
