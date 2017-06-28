@@ -14,6 +14,12 @@ from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_bl
 
 model_num = 1
 epochs = 150
+num_cols = 320
+num_rows = 130
+num_channels = 1
+
+# prompt the user for what they want to name the saved tflearn model
+model_name = raw_input('Dataset_number of frames_otherparameters')
     
 
 os.chdir('/home/TF_Rover/RoverData')
@@ -25,12 +31,15 @@ Y = np.asarray(f['labels'])
 
 
 # Building Input
-network = input_data(shape=[None, 130, 320, 1])
+network = input_data(shape=[None, num_rows, num_cols, num_channels])
 
 ########################################################
-def DNN1(network):
-    mean, var = tf.nn.moments(network, [0])
-    network = (network-mean)/(tf.sqrt(var)+1e-6)
+def DNN1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
     network = tflearn.fully_connected(network, 64, activation='tanh',regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, 0.8)
     network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
@@ -42,9 +51,12 @@ def DNN1(network):
 
 
 ########################################################
-def Conv1(network):
-    mean, var = tf.nn.moments(network, [0])
-    network = (network-mean)/(tf.sqrt(var)+1e-6)
+def Conv1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
     network = conv_2d(network, 32, 3, activation='relu', regularizer="L2")
     network = max_pool_2d(network, 2)
     network = local_response_normalization(network)
@@ -62,7 +74,13 @@ def Conv1(network):
 
 
 ########################################################
-def Alex1(network):
+def Alex1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     network = conv_2d(network, 96, 11, strides=4, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
@@ -85,7 +103,13 @@ def Alex1(network):
 
 
 ########################################################
-def VGG1(network):
+def VGG1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     network = conv_2d(network, 64, 3, activation='relu')
     network = conv_2d(network, 64, 3, activation='relu')
     network = max_pool_2d(network, 2, strides=2)
@@ -120,7 +144,13 @@ def VGG1(network):
 
 
 ########################################################
-def Highway1(network):
+def Highway1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     dense1 = tflearn.fully_connected(network, 64, activation='elu', regularizer='L2', weight_decay=0.001)
 
     highway = dense1                              
@@ -134,7 +164,13 @@ def Highway1(network):
 
 
 ########################################################
-def ConvHighway1(network):
+def ConvHighway1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     for i in range(3):
         for j in [3, 2, 1]: 
             network = highway_conv_2d(network, 16, j, activation='elu')
@@ -150,7 +186,13 @@ def ConvHighway1(network):
 
 
 ########################################################
-def Net_in_Net1(network):
+def Net_in_Net1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     network = conv_2d(network, 192, 5, activation='relu')
     network = conv_2d(network, 160, 1, activation='relu')
     network = conv_2d(network, 96, 1, activation='relu')
@@ -173,7 +215,13 @@ def Net_in_Net1(network):
 
 
 ########################################################
-def ResNet1(network):
+def ResNet1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     network = conv_2d(network, 64, 3, activation='relu', bias=False)
     # Residual blocks
     network = residual_bottleneck(network, 3, 16, 64)
@@ -192,7 +240,13 @@ def ResNet1(network):
 
 
 ########################################################
-def ResNext1(network):
+def ResNext1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     # Residual blocks
     # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
     n = 5
@@ -213,7 +267,13 @@ def ResNext1(network):
 
 
 ########################################################
-def LSTM1(network):
+def LSTM1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     network = squeeze(image.rgb_to_grayscale_ten(network),squeeze_dims=3)
     print(network.shape)
     network = tflearn.lstm(network, 128, return_seq=True)
@@ -225,7 +285,13 @@ def LSTM1(network):
 
 
 ########################################################
-def GoogLeNet1(network):
+def GoogLeNet1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name = 'conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3,strides=2)
     pool1_3_3 = local_response_normalization(pool1_3_3)
@@ -361,7 +427,7 @@ modelswitch = {
 }
 
 
-network = modelswitch[model_num](network)
+network = modelswitch[model_num](network, scale=True)
 
 
 
@@ -377,8 +443,8 @@ model = tflearn.DNN(network, checkpoint_path='model_zoo', max_checkpoints=1, ten
 
 
 model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=True, batch_size=64, snapshot_step=200,
-          snapshot_epoch=False, run_id='rover_gray_oneframe' + modelswitch[model_num].__name__)
+          snapshot_epoch=False, run_id='rover_gray_oneframe_' + modelswitch[model_num].__name__)
 
 
-model.save('rover_gray_oneframe_' + modelswitch[model_num].__name__)
+model.save(model_name + modelswitch[model_num].__name__)
 
