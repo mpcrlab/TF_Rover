@@ -155,7 +155,7 @@ def Highway1(network, scale=False):
 
     highway = dense1                              
     for i in range(10):
-        highway = tflearn.highway(highway, 64, activation='elu',regularizer='L2', weight_decay=0.001, transform_dropout=0.8)
+        highway = tflearn.highway(highway, 64, activation='elu',regularizer='L2', weight_decay=0.001, transform_dropout=0.7)
 
     network = tflearn.fully_connected(highway, 3, activation='softmax')
     
