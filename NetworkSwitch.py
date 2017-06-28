@@ -4,6 +4,7 @@ import h5py
 import os
 import numpy as np
 from tensorflow import image
+from sklearn.preprocessing import scale
 from tensorflow import squeeze
 from tflearn.layers.core import input_data, dropout, fully_connected, flatten
 from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_2d
@@ -12,7 +13,8 @@ from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
 
 model_num = 1
-epochs = 500
+epochs = 150
+    
 
 os.chdir('/home/TF_Rover/RoverData')
 
@@ -21,19 +23,14 @@ f = h5py.File('AllRoverData.h5', 'r')
 X = np.asarray(f['data'])
 Y = np.asarray(f['labels'])
 
+
 # Building Input
 network = input_data(shape=[None, 130, 320, 1])
 
 ########################################################
-def DNN1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def DNN1(network):
+    mean, var = tf.nn.moments(network, [0])
+    network = (network-mean)/(tf.sqrt(var)+1e-6)
     network = tflearn.fully_connected(network, 64, activation='tanh',regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, 0.8)
     network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
@@ -45,15 +42,9 @@ def DNN1(network, normalization=False):
 
 
 ########################################################
-def Conv1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def Conv1(network):
+    mean, var = tf.nn.moments(network, [0])
+    network = (network-mean)/(tf.sqrt(var)+1e-6)
     network = conv_2d(network, 32, 3, activation='relu', regularizer="L2")
     network = max_pool_2d(network, 2)
     network = local_response_normalization(network)
@@ -71,15 +62,7 @@ def Conv1(network, normalization=False):
 
 
 ########################################################
-def Alex1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def Alex1(network):
     network = conv_2d(network, 96, 11, strides=4, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
@@ -102,15 +85,7 @@ def Alex1(network, normalization=False):
 
 
 ########################################################
-def VGG1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def VGG1(network):
     network = conv_2d(network, 64, 3, activation='relu')
     network = conv_2d(network, 64, 3, activation='relu')
     network = max_pool_2d(network, 2, strides=2)
@@ -145,15 +120,7 @@ def VGG1(network, normalization=False):
 
 
 ########################################################
-def Highway1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def Highway1(network):
     dense1 = tflearn.fully_connected(network, 64, activation='elu', regularizer='L2', weight_decay=0.001)
 
     highway = dense1                              
@@ -167,15 +134,7 @@ def Highway1(network, normalization=False):
 
 
 ########################################################
-def ConvHighway1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def ConvHighway1(network):
     for i in range(3):
         for j in [3, 2, 1]: 
             network = highway_conv_2d(network, 16, j, activation='elu')
@@ -191,15 +150,7 @@ def ConvHighway1(network, normalization=False):
 
 
 ########################################################
-def Net_in_Net1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def Net_in_Net1(network):
     network = conv_2d(network, 192, 5, activation='relu')
     network = conv_2d(network, 160, 1, activation='relu')
     network = conv_2d(network, 96, 1, activation='relu')
@@ -222,15 +173,7 @@ def Net_in_Net1(network, normalization=False):
 
 
 ########################################################
-def ResNet1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def ResNet1(network):
     network = conv_2d(network, 64, 3, activation='relu', bias=False)
     # Residual blocks
     network = residual_bottleneck(network, 3, 16, 64)
@@ -249,15 +192,7 @@ def ResNet1(network, normalization=False):
 
 
 ########################################################
-def ResNext1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def ResNext1(network):
     # Residual blocks
     # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
     n = 5
@@ -278,16 +213,8 @@ def ResNext1(network, normalization=False):
 
 
 ########################################################
-def LSTM1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
-    network = squeeze(image.rgb_to_grayscale(network),squeeze_dims=3)
+def LSTM1(network):
+    network = squeeze(image.rgb_to_grayscale_ten(network),squeeze_dims=3)
     print(network.shape)
     network = tflearn.lstm(network, 128, return_seq=True)
     network = tflearn.lstm(network, 128)
@@ -298,15 +225,7 @@ def LSTM1(network, normalization=False):
 
 
 ########################################################
-def GoogLeNet1(network, normalization=False):
-    if normalization is True:
-        mean, var = tf.nn.moments(network, axes=[0])
-        network = tf.nn.batch_normalization(network,
-                                            mean,
-                                            var, 
-                                            variance_epsilon=1e-6,
-                                            offset=None,
-                                            scale=None)
+def GoogLeNet1(network):
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name = 'conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3,strides=2)
     pool1_3_3 = local_response_normalization(pool1_3_3)
@@ -442,7 +361,7 @@ modelswitch = {
 }
 
 
-network = modelswitch[model_num](network, normalization=True)
+network = modelswitch[model_num](network)
 
 
 
@@ -461,5 +380,5 @@ model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=Tr
           snapshot_epoch=False, run_id='rover_gray_oneframe' + modelswitch[model_num].__name__)
 
 
-model.save('rover_gray_oneframe' + modelswitch[model_num].__name__)
+model.save('rover_gray_oneframe_' + modelswitch[model_num].__name__)
 
