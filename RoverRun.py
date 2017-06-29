@@ -22,28 +22,6 @@ tf.reset_default_graph()
 import os
 
 
-def Alex1(network):
-
-	network = conv_2d(network, 96, 11, strides=4, activation='relu')
-	network = max_pool_2d(network, 3, strides=2)
-	network = local_response_normalization(network)
-	network = conv_2d(network, 256, 5, activation='relu')
-	network = max_pool_2d(network, 3, strides=2)
-	network = local_response_normalization(network)
-	network = conv_2d(network, 384, 3, activation='relu')
-	network = conv_2d(network, 384, 3, activation='relu')
-	network = conv_2d(network, 256, 3, activation='relu')
-	network = max_pool_2d(network, 3, strides=2)
-	network = local_response_normalization(network)
-	network = fully_connected(network, 4096, activation='tanh')
-	network = dropout(network, 0.5)
-	network = fully_connected(network, 4096, activation='tanh')
-	network = dropout(network, 0.5)
-	network = fully_connected(network, 3, activation='softmax')
-
-	return network
-
-
 class RoverRun(Rover):
 
     def __init__(self):
@@ -58,10 +36,10 @@ class RoverRun(Rover):
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
-	self.network = input_data(shape=[None, 240, 320, 3])
+	self.network = input_data(shape=[None, 130, 320, 1])
 	self.network = Alex1(self.network)
 	self.model = tflearn.DNN(self.network)
-	self.model.load('/home/mpcr/Desktop/TF_Rover/Rover_test.tflearn')
+	self.model.load('/home/TF_Rover/RoverData/alexnet_gray_oneframe2')
 	self.run()
 
 
@@ -116,7 +94,7 @@ class RoverRun(Rover):
                 self.quit = True
 
 	    s=self.image	
-	    s=s[None,:,:,:]	
+	    s=s[None,110:,:,:]	
 	    self.angle = self.model.predict(s)
 	    self.angle = np.argmax(self.angle)
 	    
