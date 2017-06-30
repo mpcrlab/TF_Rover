@@ -15,18 +15,18 @@ import matplotlib.pyplot as plt
 from tflearn.data_augmentation import ImageAugmentation
 import sys
 import os
-from scipy.misc import imrotate
 
-os.chdir('/home/TF_Rover/RoverData/Right')
+
+os.chdir('/home/TF_Rover/RoverData')
 fnames = glob.glob('*.h5')
-epochs = 500
+epochs = 600
 batch_sz = 64
 errors = []
 test_num = 850
 
 
 def add_noise(x, y):
-    x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
+    x_aug = x + 0.7 * np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
     x = np.concatenate((x, x_aug), 0)
     y = np.concatenate((y, y), 0)
     return x, y
@@ -44,7 +44,9 @@ ty[np.arange(test_num), y_[R]] = 1.
 assert(np.sum(ty) == ty.shape[0]), 'more than one label per example'
 
 # Feature Scaling validation data
-tx = (tx - np.mean(tx, 0))/(np.std(tx, 0)+1e-6)
+tx = np.transpose(tx.reshape([test_num, -1]))
+tx = (tx-np.mean(tx, 0))/(np.std(tx, 0)+1e-6)
+tx = np.reshape(tx.transpose(), [test_num, 130, 320, 1])
 
 
 labels = tf.placeholder(dtype=tf.float32, shape=[None, 3])
@@ -108,7 +110,9 @@ for i in range(epochs):
             y = Y[j*batch_sz:X.shape[0]-1, :]
 
         # Feature Scaling
+        x = np.transpose(x.reshape([y.shape[0], -1]))
         x = (x-np.mean(x, 0))/(np.std(x, 0)+1e-6)
+        x = np.reshape(x.transpose(), [y.shape[0], 130, 320, 1])
 
         # Data Augmentation
         x, y = add_noise(x, y)
@@ -123,7 +127,7 @@ for i in range(epochs):
     print(val_acc)
     errors.append(1.-val_acc)
 
-model.save('Alexnet_gray_oneframe_right_randomAug')
+model.save('Alexnet_gray_oneframe_both_ways_randomAug')
 
 fig = plt.figure()
 a1 = fig.add_subplot(111)
