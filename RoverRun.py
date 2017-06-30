@@ -94,8 +94,13 @@ class RoverRun(Rover):
             if key == 'z':
                 self.quit = True
 
-	    s=self.image	
-	    s=s[None,110:,:,:]	
+	    s=self.image
+	
+	    # grayscale and crop
+	    s=np.mean(s[None,110:,:,:], 3, keepdims=True)
+	
+            # Local Feature Scaling
+	    s = (s-np.mean(s))/(np.std(s)+1e-6)
 	    self.angle = self.model.predict(s)
 	    self.angle = np.argmax(self.angle)
 	    
