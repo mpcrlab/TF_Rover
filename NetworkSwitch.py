@@ -19,7 +19,8 @@ num_rows = 130
 num_channels = 1
 
 # prompt the user for what they want to name the saved tflearn model
-model_name = raw_input('Dataset_number of frames_otherparameters')
+print('Please enter the dataset used, number of frames in each example, and any relevant details in the following format')
+model_name = raw_input('Dataset_number of frames_otherparameters  ')
     
 
 os.chdir('/home/TF_Rover/RoverData')
