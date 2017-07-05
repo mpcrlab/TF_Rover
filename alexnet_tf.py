@@ -21,6 +21,7 @@ from NetworkSwitch import *
 print('What filename do you want to save this model as?')
 raw_input('Dataset_number of frames/stackinterval_other parameters')
 
+model_num = 0
 os.chdir('/home/TF_Rover/RoverData')
 fnames = glob.glob('*.h5')
 epochs = 600
@@ -70,10 +71,10 @@ for i in range(test_num-1, f_int2, -1):
 assert(np.asarray(TY).shape[0] == np.asarray(TX).shape[0]),'data and label shapes do not match'
 
 labels = tf.placeholder(dtype=tf.float32, shape=[None, 3])
-data = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
+network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
 
 
-net_out = Alexnet(data)
+net_out = modelswitch[model_num](data)
 acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
 cost = categorical_crossentropy(net_out, labels)
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
@@ -83,10 +84,6 @@ trainop = tflearn.TrainOp(loss=cost,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop)
 
-#model.session.run(tf.initialize_all_variables())
-#trainer = tf.train.AdamOptimizer(1e-4).minimize(cost)
-#equal = tf.equal(tf.argmax(network, 1), tf.argmax(labels, 1))
-#acc = tf.reduce_mean(tf.cast(equal, tf.float32))
 
 for i in range(epochs):
     # pick random dataset for this epoch
@@ -106,9 +103,9 @@ for i in range(epochs):
         if j * batch_sz + batch_sz <= (X.shape[0]-1):
             x = X[j*batch_sz:j*batch_sz+batch_sz, :, :, :]
             y = Y[j*batch_sz:j*batch_sz+batch_sz, :]
-        #else:
-        #    x = X[j*batch_sz:X.shape[0], :, :, :]
-        #    y = Y[j*batch_sz:X.shape[0], :]
+        elif j*batch_sz + batch_sz >= (X.shape[0] -1) and X.shape[0] - (j*batch_sz + batch_sz) >= f_int2:
+            x = X[j*batch_sz:X.shape[0], :, :, :]
+            y = Y[j*batch_sz:X.shape[0], :]
 
             # Feature Scaling
             x = np.transpose(x.reshape([y.shape[0], -1]))
