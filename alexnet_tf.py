@@ -19,7 +19,7 @@ import cv2
 from NetworkSwitch import *
 
 print('What filename do you want to save this model as?')
-raw_input('Dataset_number of frames/stackinterval_other parameters')
+raw_input('Dataset_number of frames/stackinterval_other parameters  ')
 
 model_num = 0
 os.chdir('/home/TF_Rover/RoverData')
