@@ -19,7 +19,7 @@ import cv2
 from NetworkSwitch import *
 
 print('What filename do you want to save this model as?')
-raw_input('Dataset_number of frames/stackinterval_other parameters  ')
+m_save = raw_input('Dataset_number of frames/stackinterval_other parameters  ')
 
 model_num = 0
 os.chdir('/home/TF_Rover/RoverData')
@@ -139,8 +139,8 @@ for i in range(epochs):
     errors.append(1.-val_acc)
     val_accuracy.append(val_acc)
 
-np.save('validation_erroracc_both_ways_randaug_gray_alexnet.npy', errors, val_accuracy)
-model.save('Alexnet_gray_oneframe_both_ways_randomAug')
+np.save(m_save+modelswitch[model_num].__name__+'.npy', errors, val_accuracy)
+model.save(m_save+modelswitch[model_num].__name__)
 
 fig = plt.figure()
 a1 = fig.add_subplot(111)
