@@ -103,36 +103,38 @@ for i in range(epochs):
         if j * batch_sz + batch_sz <= (X.shape[0]-1):
             x = X[j*batch_sz:j*batch_sz+batch_sz, :, :, :]
             y = Y[j*batch_sz:j*batch_sz+batch_sz, :]
-        elif j*batch_sz + batch_sz >= (X.shape[0] -1) and X.shape[0] - (j*batch_sz + batch_sz) >= f_int2:
+        elif j*batch_sz + batch_sz >= (X.shape[0]-1) and X.shape[0] - (j*batch_sz + batch_sz) >= f_int2:
             x = X[j*batch_sz:X.shape[0], :, :, :]
             y = Y[j*batch_sz:X.shape[0], :]
+        else:
+            continue
 
-            # Feature Scaling
-            x = np.transpose(x.reshape([y.shape[0], -1]))
-            x = (x-np.mean(x, 0))/(np.std(x, 0)+1e-6)
-            x = np.reshape(x.transpose(), [y.shape[0], 130, 320, 1])
-
-
-            # Create framestack
-            X_ = []
-            Y_ = []
-
-            for ex_num in range(x.shape[0]-1, f_int2, -1):
-                X2 = x[ex_num-f_int, :, :, :]
-                X3 = x[ex_num-f_int2, :, :, :]
-                X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
-                Y_.append(y[ex_num, :])
+        # Feature Scaling
+        x = np.transpose(x.reshape([y.shape[0], -1]))
+        x = (x-np.mean(x, 0))/(np.std(x, 0)+1e-6)
+        x = np.reshape(x.transpose(), [y.shape[0], 130, 320, 1])
 
 
-            # Data Augmentation
-            X_, Y_ = add_noise(X_, Y_)
+        # Create framestack
+        X_ = []
+        Y_ = []
+
+        for ex_num in range(x.shape[0]-1, f_int2, -1):
+            X2 = x[ex_num-f_int, :, :, :]
+            X3 = x[ex_num-f_int2, :, :, :]
+            X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
+            Y_.append(y[ex_num, :])
+
+
+        # Data Augmentation
+        X_, Y_ = add_noise(X_, Y_)
             
-            # Training
-            model.fit_batch(feed_dicts={network:X_, labels:Y_})
-            train_acc = model.session.run(acc, feed_dict={network:X_, labels:Y_})
-            sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
+        # Training
+        model.fit_batch(feed_dicts={network:X_, labels:Y_})
+        train_acc = model.session.run(acc, feed_dict={network:X_, labels:Y_})
+        sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
                                     i+1, filename, train_acc, 1-train_acc) )
-            sys.stdout.flush()
+        sys.stdout.flush()
 
     val_acc = model.session.run(acc, feed_dict={network:TX, labels:TY})
     print(val_acc)
