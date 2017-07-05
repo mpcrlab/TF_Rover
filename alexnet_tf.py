@@ -74,7 +74,7 @@ labels = tf.placeholder(dtype=tf.float32, shape=[None, 3])
 network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
 
 
-net_out = modelswitch[model_num](data)
+net_out = modelswitch[model_num](network)
 acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
 cost = categorical_crossentropy(net_out, labels)
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
@@ -125,15 +125,16 @@ for i in range(epochs):
 
 
             # Data Augmentation
-            X_, Y_ = add_noise(X_, y)
-
-            model.fit_batch(feed_dicts={data:X_, labels:y})
-            train_acc = model.session.run(acc, feed_dict={data:X_, labels:Y_})
+            X_, Y_ = add_noise(X_, Y_)
+            
+            # Training
+            model.fit_batch(feed_dicts={network:X_, labels:Y_})
+            train_acc = model.session.run(acc, feed_dict={network:X_, labels:Y_})
             sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
                                     i+1, filename, train_acc, 1-train_acc) )
             sys.stdout.flush()
 
-    val_acc = model.session.run(acc, feed_dict={data:TX, labels:ty})
+    val_acc = model.session.run(acc, feed_dict={network:TX, labels:TY})
     print(val_acc)
     errors.append(1.-val_acc)
     val_accuracy.append(val_acc)
