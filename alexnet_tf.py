@@ -15,14 +15,23 @@ import matplotlib.pyplot as plt
 from tflearn.data_augmentation import ImageAugmentation
 import sys
 import os
+import cv2
+from NetworkSwitch import *
 
+print('What filename do you want to save this model as?')
+raw_input('Dataset_number of frames/stackinterval_other parameters')
 
 os.chdir('/home/TF_Rover/RoverData')
 fnames = glob.glob('*.h5')
 epochs = 600
-batch_sz = 64
+batch_sz = 70
 errors = []
-test_num = 850
+test_num = 1000
+f_int = 10
+f_int2 = 20
+val_accuracy = []
+num_stack = 3
+
 
 
 def add_noise(x, y):
@@ -34,47 +43,39 @@ def add_noise(x, y):
 
 # Validation set
 print('Validation Dataset: %s'%(fnames[-1]))
+
+# load the h5 file containing the data used for validation
 val_file = h5py.File(fnames[-1], 'r')
 tx = np.asarray(val_file['X'])
 y_ = np.int32(np.asarray(val_file['Y']) + 1.)
-R = np.random.randint(0, tx.shape[0], test_num)
-tx = np.mean(tx[R, 110:, :, :], 3, keepdims=True)
+
+# crop and grayscale the validation images, and select 1000
+tx = np.mean(tx[:test_num, 110:, :, :], 3, keepdims=True)
 ty = np.zeros([test_num, 3])
-ty[np.arange(test_num), y_[R]] = 1.
-assert(np.sum(ty) == ty.shape[0]), 'more than one label per example'
+ty[np.arange(test_num), y_[:test_num]] = 1.
 
 # Feature Scaling validation data
 tx = np.transpose(tx.reshape([test_num, -1]))
 tx = (tx-np.mean(tx, 0))/(np.std(tx, 0)+1e-6)
 tx = np.reshape(tx.transpose(), [test_num, 130, 320, 1])
 
+# Create validation framestack
+TX = []
+TY = []
+for i in range(test_num-1, f_int2, -1):
+    TX2 = tx[i-f_int, :, :, :]
+    TX3 = tx[i-f_int2, :, :, :]
+    TX.append(np.concatenate((tx[i, :, :, :], TX2, TX3), 2))
+    TY.append(ty[i, :])
+assert(np.asarray(TY).shape[0] == np.asarray(TX).shape[0]),'data and label shapes do not match'
 
 labels = tf.placeholder(dtype=tf.float32, shape=[None, 3])
-data = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, 1])
+data = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
 
-# Building 'AlexNet'
-network = conv_2d(data, 96, 11, strides=4, activation='relu')
-network = max_pool_2d(network, 3, strides=2)
-network = local_response_normalization(network)
-network = conv_2d(network, 256, 5, activation='relu')
-network = max_pool_2d(network, 3, strides=2)
-network = local_response_normalization(network)
-network = conv_2d(network, 384, 3, activation='relu')
-network = conv_2d(network, 384, 3, activation='relu')
-network = conv_2d(network, 256, 3, activation='relu')
-network = max_pool_2d(network, 3, strides=2)
-network = local_response_normalization(network)
-network = fully_connected(network, 4096, activation='tanh')
-network = dropout(network, 0.5)
-network = fully_connected(network, 4096, activation='tanh')
-network = dropout(network, 0.5)
-network = fully_connected(network, 3, activation='softmax')
-#network = regression(network, optimizer='momentum',
-#                  loss='categorical_crossentropy',
-#                  learning_rate=0.001)
 
-acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(network, 1), tf.argmax(labels, 1))))
-cost = categorical_crossentropy(network, labels)
+net_out = Alexnet(data)
+acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
+cost = categorical_crossentropy(net_out, labels)
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
 trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
@@ -95,9 +96,9 @@ for i in range(epochs):
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
     Y = np.zeros([y.shape[0], 3])
-    rand = np.random.randint(0, X.shape[0], X.shape[0])
-    Y[np.arange(Y.shape[0]), y[rand]] = 1.0
-    X = np.mean(X[rand, 110:, :, :], 3, keepdims=True)
+    #rand = np.random.randint(0, X.shape[0], X.shape[0])
+    Y[np.arange(Y.shape[0]), y] = 1.0
+    X = np.mean(X[:, 110:, :, :], 3, keepdims=True)
     assert(X.shape[0] == Y.shape[0]), 'Data/label dimensions not equal'
     num_batches = np.int32(np.ceil(X.shape[0]/batch_sz))
 
@@ -105,28 +106,42 @@ for i in range(epochs):
         if j * batch_sz + batch_sz <= (X.shape[0]-1):
             x = X[j*batch_sz:j*batch_sz+batch_sz, :, :, :]
             y = Y[j*batch_sz:j*batch_sz+batch_sz, :]
-        else:
-            x = X[j*batch_sz:X.shape[0]-1, :, :, :]
-            y = Y[j*batch_sz:X.shape[0]-1, :]
+        #else:
+        #    x = X[j*batch_sz:X.shape[0], :, :, :]
+        #    y = Y[j*batch_sz:X.shape[0], :]
 
-        # Feature Scaling
-        x = np.transpose(x.reshape([y.shape[0], -1]))
-        x = (x-np.mean(x, 0))/(np.std(x, 0)+1e-6)
-        x = np.reshape(x.transpose(), [y.shape[0], 130, 320, 1])
+            # Feature Scaling
+            x = np.transpose(x.reshape([y.shape[0], -1]))
+            x = (x-np.mean(x, 0))/(np.std(x, 0)+1e-6)
+            x = np.reshape(x.transpose(), [y.shape[0], 130, 320, 1])
 
-        # Data Augmentation
-        x, y = add_noise(x, y)
 
-        model.fit_batch(feed_dicts={data:x, labels:y})
-        train_acc = model.session.run(acc, feed_dict={data:x, labels:y})
-        sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
-                                i+1, filename, train_acc, 1-train_acc) )
-        sys.stdout.flush()
+            # Create framestack
+            X_ = []
+            Y_ = []
 
-    val_acc = model.session.run(acc, feed_dict={data:tx, labels:ty})
+            for ex_num in range(x.shape[0]-1, f_int2, -1):
+                X2 = x[ex_num-f_int, :, :, :]
+                X3 = x[ex_num-f_int2, :, :, :]
+                X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
+                Y_.append(y[ex_num, :])
+
+
+            # Data Augmentation
+            X_, Y_ = add_noise(X_, y)
+
+            model.fit_batch(feed_dicts={data:X_, labels:y})
+            train_acc = model.session.run(acc, feed_dict={data:X_, labels:Y_})
+            sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
+                                    i+1, filename, train_acc, 1-train_acc) )
+            sys.stdout.flush()
+
+    val_acc = model.session.run(acc, feed_dict={data:TX, labels:ty})
     print(val_acc)
     errors.append(1.-val_acc)
+    val_accuracy.append(val_acc)
 
+np.save('validation_erroracc_both_ways_randaug_gray_alexnet.npy', errors, val_accuracy)
 model.save('Alexnet_gray_oneframe_both_ways_randomAug')
 
 fig = plt.figure()
