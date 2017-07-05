@@ -127,7 +127,7 @@ for i in range(epochs):
 
 
         # Data Augmentation
-        X_, Y_ = add_noise(X_, Y_)
+        X_, Y_ = add_noise(np.asarray(X_), np.asarray(Y_))
             
         # Training
         model.fit_batch(feed_dicts={network:X_, labels:Y_})
