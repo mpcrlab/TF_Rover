@@ -12,27 +12,15 @@ from tflearn.layers.normalization import local_response_normalization, batch_nor
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
 
-model_num = 1
-epochs = 150
+#model_num = 1
+#epochs = 350
 num_cols = 320
 num_rows = 130
-num_channels = 1
-
-# prompt the user for what they want to name the saved tflearn model
-print('Please enter the dataset used, number of frames in each example, and any relevant details in the following format')
-model_name = raw_input('Dataset_number of frames_otherparameters  ')
-    
-
-os.chdir('/home/TF_Rover/RoverData')
-
-# load data 
-f = h5py.File('AllRoverData.h5', 'r')
-X = np.asarray(f['data'])
-Y = np.asarray(f['labels'])
+#num_channels = 1
 
 
 # Building Input
-network = input_data(shape=[None, num_rows, num_cols, num_channels])
+#network = input_data(shape=[None, num_rows, num_cols, num_channels])
 
 ########################################################
 def DNN1(network, scale=False):
@@ -428,23 +416,23 @@ modelswitch = {
 }
 
 
-network = modelswitch[model_num](network, scale=True)
+#network = modelswitch[model_num](network, scale=True)
 
 
 
 
-network = regression(network, optimizer='momentum', loss='categorical_crossentropy', learning_rate=0.001)
+#network = regression(network, optimizer='momentum', loss='categorical_crossentropy', learning_rate=0.001)
 
 
 
 
-model = tflearn.DNN(network, checkpoint_path='model_zoo', max_checkpoints=1, tensorboard_verbose=0)
+#model = tflearn.DNN(network, checkpoint_path='model_zoo', max_checkpoints=1, tensorboard_verbose=0)
 
 
 
 
-model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=True, batch_size=64, snapshot_step=200,
-          snapshot_epoch=False, run_id='rover_gray_oneframe_' + modelswitch[model_num].__name__)
+#model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=True, batch_size=50, snapshot_step=200,
+#          snapshot_epoch=False, run_id='rover_gray_oneframe_' + modelswitch[model_num].__name__)
 
 
-model.save(model_name + modelswitch[model_num].__name__)
+#model.save(model_name + modelswitch[model_num].__name__)
