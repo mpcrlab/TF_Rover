@@ -68,7 +68,12 @@ for i in range(test_num-1, f_int2, -1):
     TX3 = tx[i-f_int2, :, :, :]
     TX.append(np.concatenate((tx[i, :, :, :], TX2, TX3), 2))
     TY.append(ty[i, :])
-assert(np.asarray(TY).shape[0] == np.asarray(TX).shape[0]),'data and label shapes do not match'
+
+TX = np.asarray(TX)
+TY = np.asarray(TY)
+print(TX.shape)
+print(TY.shape)
+assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
 
 labels = tf.placeholder(dtype=tf.float32, shape=[None, 3])
 network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
