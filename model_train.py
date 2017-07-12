@@ -152,6 +152,7 @@ for i in range(epochs):
     print(val_acc)
     errors.append(1.-val_acc)
     val_accuracy.append(val_acc)
+    f.close()
 
 np.save(m_save+modelswitch[model_num].__name__+'.npy', errors, val_accuracy)
 model.save(m_save+modelswitch[model_num].__name__)
