@@ -19,7 +19,7 @@ import cv2
 from NetworkSwitch import *
 
 print('What filename do you want to save this model as?')
-m_save = raw_input('Dataset_number of frames/stackinterval_other parameters  ')
+m_save = raw_input('Rover Used_number of frames/stackinterval_other parameters  ')
 
 model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 
