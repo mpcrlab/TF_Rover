@@ -33,6 +33,7 @@ f_int = 10
 f_int2 = 20
 val_accuracy = []
 num_stack = 3
+val_name = 'Run_2_both_lights_on.h5'
 
 
 
@@ -44,10 +45,10 @@ def add_noise(x, y):
 
 
 # Validation set
-print('Validation Dataset: %s'%(fnames[-1]))
+print('Validation Dataset: %s'%(val_name))
 
 # load the h5 file containing the data used for validation
-val_file = h5py.File(fnames[-1], 'r')
+val_file = h5py.File(val_name, 'r')
 tx = np.asarray(val_file['X'])
 y_ = np.int32(np.asarray(val_file['Y']) + 1.)
 
@@ -93,8 +94,13 @@ model = Trainer(train_ops=trainop)
 
 for i in range(epochs):
     # pick random dataset for this epoch
-    n = np.random.randint(1, len(fnames)-2, 1)
+    n = np.random.randint(1, len(fnames)-1, 1)
     filename = fnames[n[0]]
+    
+    if filename == val_name:
+        print('skipping iteration')
+        continue
+        
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
