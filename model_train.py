@@ -1,3 +1,5 @@
+# author = michael teti
+
 from __future__ import division, print_function, absolute_import
 import numpy as np
 import tensorflow as tf
@@ -154,9 +156,9 @@ for i in range(epochs):
         sys.stdout.flush()
 
     # Get validation accuracy and error rate
-    val_acc = model.session.run(acc, feed_dict={network:TX, labels:TY})
+    val_acc, val_loss = model.session.run([acc, cost], feed_dict={network:TX, labels:TY})
     print(val_acc)
-    errors.append(1.-val_acc)
+    errors.append(val_loss)
     val_accuracy.append(val_acc)
     f.flush()
     f.close()
@@ -165,7 +167,7 @@ for i in range(epochs):
 np.save(m_save+modelswitch[model_num].__name__+'.npy', errors, val_accuracy)
 model.save(m_save+modelswitch[model_num].__name__)
 
-# Plot the validation error rate
+# Plot the validation loss during training
 fig = plt.figure()
 a1 = fig.add_subplot(111)
 a1.plot(errors)
