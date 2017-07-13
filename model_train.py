@@ -58,7 +58,7 @@ def create_framestack(x, y, f_int, f_int2):
         X3 = x[ex_num-f_int2, :, :, :]
         X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
         Y_.append(y[ex_num, :])
-    return np.assarray(X_), np.asarray(Y_)
+    return np.asarray(X_), np.asarray(Y_)
 
 
 def feature_scale(x):
