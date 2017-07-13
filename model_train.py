@@ -62,7 +62,7 @@ def create_framestack(x, y, f_int, f_int2):
 
 
 def feature_scale(x):
-    x = scale(x.reshape([x.shape[0], -1])), 1)
+    x = scale(x.reshape([x.shape[0], -1]), 1)
     return x.reshape([x.shape[0], 130, 320, 1])
 
 
