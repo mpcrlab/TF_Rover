@@ -25,7 +25,7 @@ import os
 
 class RoverRun(Rover):
 
-    def __init__(self):
+    def __init__(self, framestack=False):
         Rover.__init__(self)
         self.d = Data()
         self.userInterface = Pygame_UI()
@@ -37,10 +37,17 @@ class RoverRun(Rover):
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
-	self.network = input_data(shape=[None, 130, 320, 1])
-	self.network = Alex1(self.network)
+
+        if framestack is False:
+	    self.network = input_data(shape=[None, 130, 320, 1])
+        else:
+            self.network = input_data(shape=[None, 130, 320, len(framestack)+1])
+            self.framestack = np.zeros([self.FPS, 130, 320, 1])
+            self.stack = framestack    
+
+	self.network = DNN1(self.network)
 	self.model = tflearn.DNN(self.network)
-	self.model.load('/home/TF_Rover/RoverData/alexnet_gray_oneframe2')
+	self.model.load('/home/TF_Rover/RoverData/Felix_3frames10-20_FeatureScaling_DNN1')
 	self.run()
 
 
@@ -101,7 +108,16 @@ class RoverRun(Rover):
 	
             # Local Feature Scaling
 	    s = (s-np.mean(s))/(np.std(s)+1e-6)
-	    self.angle = self.model.predict(s)
+            
+            # Framestack 
+            if self.stack is not False:
+                current = s
+                for i in range(len(self.stack)):
+                    frame = self.framestack[self.stack['f_int{0}'.format(i)], :, :, :]
+                    s = np.concatenate((s, frame[None, :, :, :]), 3)
+                self.framestack = np.concatenate((current, self.framestack[1:, :, :, :]), 0)
+	    
+            self.angle = self.model.predict(s)
 	    self.angle = np.argmax(self.angle)
 	    
 	    
