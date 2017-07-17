@@ -111,7 +111,6 @@ model = Trainer(train_ops=trainop,
                best_checkpoint_path='/home/TF_Rover/RoverData')
 
 for i in range(epochs):
-    summary_writer = tf.train.SummaryWriter('/tmp/tflearn_logs', graph_def=sess.graph_def)
     
     # pick random dataset for this epoch
     n = np.random.randint(1, len(fnames)-1, 1)
