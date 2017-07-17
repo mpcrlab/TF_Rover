@@ -37,13 +37,13 @@ class RoverRun(Rover):
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
+        self.stack = framestack       
 
         if framestack is False:
 	    self.network = input_data(shape=[None, 130, 320, 1])
         else:
             self.network = input_data(shape=[None, 130, 320, len(framestack)+1])
             self.framestack = np.zeros([1, 130, 320, self.FPS])
-            self.stack = framestack
 	    self.stack.append(0)
             self.stack.sort()
 
