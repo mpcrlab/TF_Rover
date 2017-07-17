@@ -99,8 +99,7 @@ network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
 net_out = modelswitch[model_num](network)
 acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
 cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
-tf.scalar_summary('loss', cost)
-tf.scalar_summary('accuracy', acc)
+
 
 # gradient descent optimizer
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
@@ -108,8 +107,8 @@ trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
                          metric=None,
                          batch_size=batch_sz)
-model = Trainer(train_ops=trainop)
-merged = tf.merge_all_summaries()
+model = Trainer(train_ops=trainop,
+               best_checkpoint_path='/home/TF_Rover/RoverData')
 
 for i in range(epochs):
     summary_writer = tf.train.SummaryWriter('/tmp/tflearn_logs', graph_def=sess.graph_def)
@@ -160,11 +159,6 @@ for i in range(epochs):
                                     i+1, filename, train_acc, 1-train_acc) )
         sys.stdout.flush()
        
-    
-        # tensorboard logs68
-        summary_str = sess.run(merged, feed_dict={network:x, labels:y})
-        summary_writer.add_summary(summary_str, i*num_batches+j)
-
         
 
     # Get validation accuracy and error rate
