@@ -86,8 +86,8 @@ ty[np.arange(test_num), y_[:test_num]] = 1.
 tx = feature_scale(tx)
 
 # Create validation framestack
-TX, TY = create_framestack(tx, ty, f_int, f_int2)
-assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
+#tx, ty = create_framestack(tx, ty, f_int, f_int2)
+#assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
 
 
 # Create input layer and label placeholder for the network
@@ -156,7 +156,7 @@ for i in range(epochs):
         sys.stdout.flush()
 
     # Get validation accuracy and error rate
-    val_acc, val_loss = model.session.run([acc, cost], feed_dict={network:TX, labels:TY})
+    val_acc, val_loss = model.session.run([acc, cost], feed_dict={network:tx, labels:ty})
     print(val_acc)
     errors.append(val_loss)
     val_accuracy.append(val_acc)
