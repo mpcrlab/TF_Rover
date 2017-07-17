@@ -143,14 +143,14 @@ for i in range(epochs):
         x = feature_scale(x)
 
         # framestack
-        X_, Y_ = create_framestack(x, y, f_int, f_int2)
+        #x, y = create_framestack(x, y, f_int, f_int2)
 
         # Data Augmentation
-        X_, Y_ = add_noise(X_, Y_)
+        x, y = add_noise(x, y)
 
         # Training
-        model.fit_batch(feed_dicts={network:X_, labels:Y_})
-        train_acc = model.session.run(acc, feed_dict={network:X_, labels:Y_})
+        model.fit_batch(feed_dicts={network:x, labels:y})
+        train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
         sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
                                     i+1, filename, train_acc, 1-train_acc) )
         sys.stdout.flush()
@@ -164,7 +164,8 @@ for i in range(epochs):
     f.close()
 
 # Save model and acc/error curves
-np.save(m_save+modelswitch[model_num].__name__+'.npy', errors, val_accuracy)
+np.save(m_save+modelswitch[model_num].__name__+'val_loss.npy', errors)
+np.save(m_save+modelswitch[model_num].__name__+'val_acc.npy', val_accuracy)
 model.save(m_save+modelswitch[model_num].__name__)
 
 # Plot the validation loss during training
