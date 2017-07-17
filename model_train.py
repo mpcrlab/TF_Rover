@@ -32,7 +32,7 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData')
 fnames = glob.glob('*.h5')
-epochs = 800
+epochs = 275
 batch_sz = 70
 errors = []
 test_num = 600
