@@ -108,7 +108,8 @@ trainop = tflearn.TrainOp(loss=cost,
                          metric=None,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop,
-               best_checkpoint_path='/home/TF_Rover/RoverData')
+               best_checkpoint_path='/home/TF_Rover/RoverData',
+               tensorboard_verbose=1)
 
 for i in range(epochs):
     
