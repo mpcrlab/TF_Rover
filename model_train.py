@@ -99,6 +99,8 @@ network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
 net_out = modelswitch[model_num](network)
 acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
 cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
+tf.scalar_summary('loss', cost)
+tf.scalar_summary('accuracy', acc)
 
 # gradient descent optimizer
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
@@ -107,14 +109,17 @@ trainop = tflearn.TrainOp(loss=cost,
                          metric=None,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop)
-
+merged = tf.merge_all_summaries()
 
 for i in range(epochs):
+    summary_writer = tf.train.SummaryWriter('/tmp/tflearn_logs', graph_def=sess.graph_def)
+    
     # pick random dataset for this epoch
     n = np.random.randint(1, len(fnames)-1, 1)
     filename = fnames[n[0]]
-    # skip the validation dataset if chosen
-    if filename == val_name:
+    
+    # skip validation set if chosen
+    if filename == val_name: 
         print('skipping iteration')
         continue
 
@@ -124,8 +129,8 @@ for i in range(epochs):
     y = np.int32(f['Y']) + 1
     Y = np.zeros([y.shape[0], 3])
     rand = np.random.randint(0, X.shape[0], X.shape[0])
-    Y[np.arange(Y.shape[0]), y] = 1.0
-    X = np.mean(X[:, 110:, :, :], 3, keepdims=True)
+    Y[np.arange(Y.shape[0]), y] = 1.0 # create one-hot label vector
+    X = np.mean(X[:, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data/label dimensions not equal'
     num_batches = np.int32(np.ceil(X.shape[0]/batch_sz))
 
@@ -154,6 +159,13 @@ for i in range(epochs):
         sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
                                     i+1, filename, train_acc, 1-train_acc) )
         sys.stdout.flush()
+       
+    
+        # tensorboard logs68
+        summary_str = sess.run(merged, feed_dict={network:x, labels:y})
+        summary_writer.add_summary(summary_str, i*num_batches+j)
+
+        
 
     # Get validation accuracy and error rate
     val_acc, val_loss = model.session.run([acc, cost], feed_dict={network:tx, labels:ty})
