@@ -146,7 +146,7 @@ for i in range(epochs):
         X_, Y_ = create_framestack(x, y, f_int, f_int2)
 
         # Data Augmentation
-        X_, Y_ = add_noise(np.asarray(X_), np.asarray(Y_))
+        X_, Y_ = add_noise(X_, Y_)
 
         # Training
         model.fit_batch(feed_dicts={network:X_, labels:Y_})
