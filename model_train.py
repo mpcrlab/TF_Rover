@@ -104,8 +104,7 @@ cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
 acc_sum = tf.summary.scalar('Accuracy', acc)
 loss_sum = tf.summary.scalar('Loss', cost)
 merged = tf.summary.merge_all()
-train_writer = tf.summary.FileWriter('/tmp/tflearn_logs/',
-                                      sess.graph)
+
 
 # gradient descent optimizer
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
@@ -114,6 +113,9 @@ trainop = tflearn.TrainOp(loss=cost,
                          metric=None,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop)
+
+train_writer = tf.summary.FileWriter('/tmp/tflearn_logs/',
+                                      model.session.graph)
 
 for i in range(epochs):
     
