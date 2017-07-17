@@ -101,8 +101,8 @@ acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(label
 cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
 
 # Tensorboard summaries
-tf.summary.scalar('acc', acc)
-tf.summary.scalar('cost', cost)
+tf.summary.scalar('Validation Accuracy', acc)
+tf.summary.scalar('Validation Loss', cost)
 merged = tf.summary.merge_all()
 
 
@@ -114,9 +114,9 @@ trainop = tflearn.TrainOp(loss=cost,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop)
 
-writer = tf.summary.FileWriter('/tmp/tflearn_logs/train',
+writer = tf.summary.FileWriter('/tmp/tflearn_logs/m_save+modelswitch[model_num].__name__',
                                model.session.graph)
-writer2 = tf.summary.FileWriter('/tmp/tflearn_logs/test')
+
 
 for i in range(epochs):
     
@@ -162,18 +162,16 @@ for i in range(epochs):
         # Training
         model.fit_batch(feed_dicts={network:x, labels:y})
         train_acc, train_loss = model.session.run([acc, cost], feed_dict={network:x, labels:y})
-        #train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
-        #sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
-        #                            i+1, filename, train_acc, 1-train_acc) )
-        #sys.stdout.flush()
-        t_acc, t_loss, t_sum = model.session.run([acc, cost, merged], 
-                                                 feed_dict={network:x, labels:y})        
-        writer.add_summary(t_sum, i)
+        train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
+        sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
+                                    i+1, filename, train_acc, 1-train_acc) )
+        sys.stdout.flush()
+
     
     # Get validation accuracy and error rate
     val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
-    writer2.add_summary(summary, i*num_batches)
+    writer.add_summary(summary, i)
     print(val_acc)
     errors.append(val_loss)
     val_accuracy.append(val_acc)
