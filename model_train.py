@@ -168,13 +168,12 @@ for i in range(epochs):
         #sys.stdout.flush()
         t_acc, t_loss, t_sum = model.session.run([acc, cost, merged], 
                                                  feed_dict={network:x, labels:y})        
-        t_acc, t_loss, tsum = model.session.run([acc, cost, merged],
-                                                 feed_dict={network:x, labels:x})
+        writer.add_summary(t_sum, i)
     
     # Get validation accuracy and error rate
     val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
-    writer.add_summary(summary, i)
+    writer2.add_summary(summary, i*num_batches)
     print(val_acc)
     errors.append(val_loss)
     val_accuracy.append(val_acc)
