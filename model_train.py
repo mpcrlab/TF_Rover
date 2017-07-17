@@ -41,7 +41,6 @@ f_int2 = 5
 val_accuracy = []
 num_stack = 1
 val_name = 'Run_2_both_lights_on.h5'
-print(fnames)
 
 
 
