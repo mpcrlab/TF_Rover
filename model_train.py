@@ -100,6 +100,12 @@ net_out = modelswitch[model_num](network)
 acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
 cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
 
+# Tensorboard summaries
+acc_sum = tf.summary.scalar('Accuracy', acc)
+loss_sum = tf.summary.scalar('Loss', cost)
+merged = tf.summary.merge_all()
+train_writer = tf.summary.FileWriter('/tmp/tflearn_logs/',
+                                      sess.graph)
 
 # gradient descent optimizer
 opt = tf.train.AdamOptimizer(learning_rate=0.0001)
@@ -152,15 +158,17 @@ for i in range(epochs):
 
         # Training
         model.fit_batch(feed_dicts={network:x, labels:y})
-        train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
-        sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
-                                    i+1, filename, train_acc, 1-train_acc) )
-        sys.stdout.flush()
+        train_acc, train_loss = model.session.run([acc, cost], feed_dict={network:x, labels:y})
+        #train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
+        #sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
+        #                            i+1, filename, train_acc, 1-train_acc) )
+        #sys.stdout.flush()
        
-        
-
+    
     # Get validation accuracy and error rate
-    val_acc, val_loss = model.session.run([acc, cost], feed_dict={network:tx, labels:ty})
+    val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
+                                                   feed_dict={network:tx, labels:ty})
+    test_writer.add_summary(summary, i)
     print(val_acc)
     errors.append(val_loss)
     val_accuracy.append(val_acc)
