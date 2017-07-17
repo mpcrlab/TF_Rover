@@ -46,7 +46,7 @@ print(fnames)
 
 
 def add_noise(x, y):
-    x_aug = x + 0.7 * np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
+    x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
     x = np.concatenate((x, x_aug), 0)
     y = np.concatenate((y, y), 0)
     return x, y
@@ -123,7 +123,7 @@ for i in range(epochs):
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
     Y = np.zeros([y.shape[0], 3])
-    #rand = np.random.randint(0, X.shape[0], X.shape[0])
+    rand = np.random.randint(0, X.shape[0], X.shape[0])
     Y[np.arange(Y.shape[0]), y] = 1.0
     X = np.mean(X[:, 110:, :, :], 3, keepdims=True)
     assert(X.shape[0] == Y.shape[0]), 'Data/label dimensions not equal'
