@@ -114,7 +114,7 @@ trainop = tflearn.TrainOp(loss=cost,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop)
 
-writer = tf.summary.FileWriter('/tmp/tflearn_logs/m_save+modelswitch[model_num].__name__',
+writer = tf.summary.FileWriter('/tmp/tflearn_logs/'+m_save+modelswitch[model_num].__name__,
                                model.session.graph)
 
 
