@@ -101,8 +101,8 @@ acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(label
 cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
 
 # Tensorboard summaries
-tf.summary.scalar('Validation Accuracy', acc)
-tf.summary.scalar('Validation Loss', cost)
+tf.summary.scalar('Accuracy', acc)
+tf.summary.scalar('Loss', cost)
 merged = tf.summary.merge_all()
 
 
