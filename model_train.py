@@ -178,9 +178,7 @@ for i in range(epochs):
             val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
             writer.add_summary(summary, num_iters)
-            print(val_acc)
-            errors.append(val_loss)
-            val_accuracy.append(val_acc)
+
             
     f.flush()
     f.close()
