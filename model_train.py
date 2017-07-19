@@ -113,9 +113,10 @@ trainop = tflearn.TrainOp(loss=cost,
                          batch_size=batch_sz)
 model = Trainer(train_ops=trainop)
 
-writer = tf.summary.FileWriter('/tmp/tflearn_logs/'+m_save+modelswitch[model_num].__name__,
+writer = tf.summary.FileWriter('/tmp/tflearn_logs/test'+m_save+modelswitch[model_num].__name__,
                                model.session.graph)
-
+writer2 = tf.summary.FileWriter('/tmp/tflearn_logs/train'+m_save+modelswitch[model_num].__name__,
+                               model.session.graph)
 
 for i in range(epochs):
     
@@ -161,12 +162,15 @@ for i in range(epochs):
 
         # Training
         model.fit_batch(feed_dicts={network:x, labels:y})
-        train_acc, train_loss, summ1 = model.session.run([acc, cost, merged], feed_dict={network:x, labels:y})
-        train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
-        sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
-                                    i+1, filename, train_acc, train_loss) )
-        sys.stdout.flush()
-        print(summ1)
+        train_acc, train_loss = model.session.run([acc, cost], feed_dict={network:x, labels:y})
+        #sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
+        #                            i+1, filename, train_acc, train_loss) )
+        #sys.stdout.flush()
+        
+        if j%30 == 0:
+            train_summary = model.session.run(merged, feed_dict={network:x, labels:y})
+            writer2.add_summary(train_summary, i*num_batches+j)
+    
     
     # Get validation accuracy and error rate
     val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
