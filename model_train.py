@@ -41,6 +41,7 @@ f_int2 = 5
 val_accuracy = []
 num_stack = 1
 val_name = 'Run_2_both_lights_on.h5'
+num_iters = 0.
 
 
 
@@ -150,7 +151,7 @@ for i in range(epochs):
             y = Y[j*batch_sz:X.shape[0], :]
         else:
             continue
-
+   
         # local feature Scaling
         x = feature_scale(x)
 
@@ -166,19 +167,21 @@ for i in range(epochs):
         #sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
         #                            i+1, filename, train_acc, train_loss) )
         #sys.stdout.flush()
+        num_iters += 1.
         
-        if j%30 == 0:
+        if num_iters%20 == 0:
             train_summary = model.session.run(merged, feed_dict={network:x, labels:y})
-            writer2.add_summary(train_summary, i*num_batches+j)
-    
-    
-    # Get validation accuracy and error rate
-    val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
+            writer2.add_summary(train_summary, num_iters)
+          
+        elif num_iters%300 = 0:
+            # Get validation accuracy and error rate
+            val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
-    writer.add_summary(summary, i)
-    print(val_acc)
-    errors.append(val_loss)
-    val_accuracy.append(val_acc)
+            writer.add_summary(summary, num_iters)
+            print(val_acc)
+            errors.append(val_loss)
+            val_accuracy.append(val_acc)
+            
     f.flush()
     f.close()
 
