@@ -31,16 +31,16 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData')
-fnames = glob.glob('*.h5')
-epochs = 350
-batch_sz = 70
-errors = []
-test_num = 600
+fnames = glob.glob('*.h5') # datasets to train on
+epochs = 350 # number of epochs
+batch_sz = 70  # training batch size
+errors = []  # variable to store the validation losses
+test_num = 600  # Number of validation examples
 f_int = 2
 f_int2 = 5
-val_accuracy = []
+val_accuracy = [] # variable to store the validation accuracy
 num_stack = 1
-val_name = 'Run_2_both_lights_on.h5'
+val_name = 'Run_2_both_lights_on.h5' # Dataset to use for validation
 num_iters = 0.
 
 
