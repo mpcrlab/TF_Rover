@@ -30,9 +30,9 @@ m_save = raw_input('Rover Used_number of frames/stackinterval_other parameters  
 model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 
 # define useful variables
-os.chdir('/home/TF_Rover/RoverData/Right/Libby')
+os.chdir('/home/TF_Rover/RoverData')
 fnames = glob.glob('*.h5')
-epochs = 275
+epochs = 350
 batch_sz = 70
 errors = []
 test_num = 700
@@ -138,6 +138,7 @@ for i in range(epochs):
     X = np.mean(X[:, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data/label dimensions not equal'
     num_batches = np.int32(np.ceil(X.shape[0]/batch_sz))
+    train_error=[]
 
     for j in range(num_batches):
         if j * batch_sz + batch_sz <= (X.shape[0]-1):
@@ -160,12 +161,12 @@ for i in range(epochs):
 
         # Training
         model.fit_batch(feed_dicts={network:x, labels:y})
-        train_acc, train_loss = model.session.run([acc, cost], feed_dict={network:x, labels:y})
+        train_acc, train_loss, summ1 = model.session.run([acc, cost, merged], feed_dict={network:x, labels:y})
         train_acc = model.session.run(acc, feed_dict={network:x, labels:y})
         sys.stdout.write('Epoch %d; dataset %s; train_acc: %.2f; loss: %f  \r'%(
-                                    i+1, filename, train_acc, 1-train_acc) )
+                                    i+1, filename, train_acc, train_loss) )
         sys.stdout.flush()
-
+        print(summ1)
     
     # Get validation accuracy and error rate
     val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
