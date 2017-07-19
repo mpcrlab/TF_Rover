@@ -140,7 +140,6 @@ for i in range(epochs):
     X = np.mean(X[:, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data/label dimensions not equal'
     num_batches = np.int32(np.ceil(X.shape[0]/batch_sz))
-    train_error=[]
 
     for j in range(num_batches):
         if j * batch_sz + batch_sz <= (X.shape[0]-1):
