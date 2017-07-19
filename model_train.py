@@ -35,12 +35,12 @@ fnames = glob.glob('*.h5')
 epochs = 275
 batch_sz = 70
 errors = []
-test_num = 800
+test_num = 1000
 f_int = 2
 f_int2 = 5
 val_accuracy = []
 num_stack = 1
-val_name = 'Run_2_both_lights_on.h5'
+val_name = 'Run_2_right_light_on.h5'
 
 
 
@@ -178,12 +178,4 @@ for i in range(epochs):
     f.close()
 
 # Save model and acc/error curves
-np.save(m_save+modelswitch[model_num].__name__+'val_loss.npy', errors)
-np.save(m_save+modelswitch[model_num].__name__+'val_acc.npy', val_accuracy)
 model.save(m_save+modelswitch[model_num].__name__)
-
-# Plot the validation loss during training
-fig = plt.figure()
-a1 = fig.add_subplot(111)
-a1.plot(errors)
-plt.show()
