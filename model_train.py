@@ -40,7 +40,7 @@ f_int = 2
 f_int2 = 5
 val_accuracy = []
 num_stack = 1
-val_name = 'Run_2_right_light_on.h5'
+val_name = 'Run_2_both_lights_on.h5'
 
 
 
