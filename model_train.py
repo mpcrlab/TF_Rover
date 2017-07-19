@@ -173,7 +173,7 @@ for i in range(epochs):
             train_summary = model.session.run(merged, feed_dict={network:x, labels:y})
             writer2.add_summary(train_summary, num_iters)
           
-        elif num_iters%300 == 0:
+        elif num_iters%200 == 0:
             # Get validation accuracy and error rate
             val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
