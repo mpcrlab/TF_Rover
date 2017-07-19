@@ -30,12 +30,12 @@ m_save = raw_input('Rover Used_number of frames/stackinterval_other parameters  
 model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 
 # define useful variables
-os.chdir('/home/TF_Rover/RoverData/Left/Libby')
+os.chdir('/home/TF_Rover/RoverData/Right/Libby')
 fnames = glob.glob('*.h5')
 epochs = 275
 batch_sz = 70
 errors = []
-test_num = 600
+test_num = 800
 f_int = 2
 f_int2 = 5
 val_accuracy = []
