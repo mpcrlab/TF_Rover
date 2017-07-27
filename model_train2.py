@@ -35,9 +35,9 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 os.chdir('/home/TF_Rover/RoverData/Right')
 fnames = glob.glob('*.h5') # datasets to train on
 epochs = 1000000 # number of training iterations
-batch_sz = 80  # training batch size
+batch_sz = 100  # training batch size
 errors = []  # variable to store the validation losses
-test_num = 600  # Number of validation examples
+test_num = 650  # Number of validation examples
 f_int = 2
 f_int2 = 5
 val_accuracy = [] # variable to store the validation accuracy
@@ -154,17 +154,15 @@ for i in range(epochs):
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
     train_acc, train_loss = model.session.run([acc, cost], feed_dict={network:X, labels:Y})
-    #sys.stdout.flush()
-    num_iters += 1.
         
     train_summary = model.session.run(merged, feed_dict={network:X, labels:Y})
-    writer2.add_summary(train_summary, num_iters)
+    writer2.add_summary(train_summary, i)
           
     if num_iters%50 == 0:
         # Get validation accuracy and error rate
         val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
-        writer.add_summary(summary, num_iters)
+        writer.add_summary(summary, i)
 
             
     f.flush()
