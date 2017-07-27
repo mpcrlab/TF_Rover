@@ -150,7 +150,7 @@ for i in range(epochs):
     train_summary = model.session.run(merged, feed_dict={network:X, labels:Y})
     writer2.add_summary(train_summary, i)
           
-    if num_iters%50 == 0:
+    if i%50 == 0:
         # get validation batch
         tx, ty = batch_get(val_name, 600)
         
