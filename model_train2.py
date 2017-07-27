@@ -80,6 +80,7 @@ def batch_get(filename, batch_size):
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
     f.close()
+    f.flush()
     return X, Y
 
 
@@ -161,9 +162,6 @@ for i in range(epochs):
                                                    feed_dict={network:tx, labels:ty})
         writer.add_summary(summary, i)
 
-            
-    f.flush()
-    f.close()
 
 # Save model and acc/error curves
 model.save(m_save+modelswitch[model_num].__name__)
