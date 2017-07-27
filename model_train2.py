@@ -79,8 +79,8 @@ def batch_get(filename, batch_size):
     Y[np.arange(batch_sz), y[rand]] = 1.0 # create one-hot label vector
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
-    f.close()
     f.flush()
+    f.close()
     return X, Y
 
 
