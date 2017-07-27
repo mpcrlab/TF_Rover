@@ -70,23 +70,21 @@ def feature_scale(x):
     return x.reshape([x.shape[0], 130, 320, 1])
 
 
+def batch_get(filename, batch_size):
+    f = h5py.File(filename, 'r')
+    X = np.asarray(f['X'])
+    y = np.int32(f['Y']) + 1
+    Y = np.zeros([batch_sz, 3])
+    rand = np.random.randint(f_int2, X.shape[0], batch_sz)
+    Y[np.arange(batch_sz), y[rand]] = 1.0 # create one-hot label vector
+    X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
+    assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
+    f.close()
+    return X, Y
+
 
 # Validation set
 print('Validation Dataset: %s'%(val_name))
-
-# load the h5 file containing the data used for validation
-val_file = h5py.File(val_name, 'r')
-tx = np.asarray(val_file['X'])
-y_ = np.int32(np.asarray(val_file['Y']) + 1.)
-val_file.close()
-
-# crop and grayscale the validation images, and select 1000
-tx = np.mean(tx[:test_num, 110:, :, :], 3, keepdims=True)
-ty = np.zeros([test_num, 3])
-ty[np.arange(test_num), y_[:test_num]] = 1.
-
-# Feature Scaling validation data
-tx = feature_scale(tx)
 
 # Create validation framestack
 #tx, ty = create_framestack(tx, ty, f_int, f_int2)
@@ -133,14 +131,7 @@ for i in range(epochs):
         continue
 
     # load the chosen data file
-    f = h5py.File(filename, 'r')
-    X = np.asarray(f['X'])
-    y = np.int32(f['Y']) + 1
-    Y = np.zeros([batch_sz, 3])
-    rand = np.random.randint(f_int2, X.shape[0], batch_sz)
-    Y[np.arange(batch_sz), y[rand]] = 1.0 # create one-hot label vector
-    X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
-    assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
+    X, Y = batch_get(filename, batch_sz)
 
     # local feature Scaling
     X = feature_scale(X)
@@ -159,6 +150,12 @@ for i in range(epochs):
     writer2.add_summary(train_summary, i)
           
     if num_iters%50 == 0:
+        # get validation batch
+        tx, ty = batch_get(val_name, 600)
+        
+        # feature scale validation data
+        tx = feature_scale(tx)
+        
         # Get validation accuracy and error rate
         val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
                                                    feed_dict={network:tx, labels:ty})
