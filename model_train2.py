@@ -44,6 +44,7 @@ val_accuracy = [] # variable to store the validation accuracy
 num_stack = 1
 val_name = 'Run_2_l_lights_on.h5' # Dataset to use for validation
 num_iters = 0.
+num_classes = 4
 
 
 
@@ -74,7 +75,7 @@ def batch_get(filename, batch_size):
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
-    Y = np.zeros([batch_sz, 3])
+    Y = np.zeros([batch_sz, num_classes])
     rand = np.random.randint(f_int2, X.shape[0], batch_sz)
     Y[np.arange(batch_sz), y[rand]] = 1.0 # create one-hot label vector
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
@@ -93,7 +94,7 @@ print('Validation Dataset: %s'%(val_name))
 
 
 # Create input layer and label placeholder for the network
-labels = tf.placeholder(dtype=tf.float32, shape=[None, 3])
+labels = tf.placeholder(dtype=tf.float32, shape=[None, num_classes])
 network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
 
 
