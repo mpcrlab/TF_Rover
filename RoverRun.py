@@ -1,6 +1,8 @@
 from __future__ import print_function
 import pygame
 from Data import *
+import pygame.camera
+from pygame.locals import *
 from NetworkRun import *
 from Pygame_UI import *
 from rover import Rover
@@ -25,7 +27,7 @@ import os
 
 class RoverRun(Rover):
 
-    def __init__(self, framestack=False):
+    def __init__(self, framestack=False, film=False):
         Rover.__init__(self)
         self.d = Data()
         self.userInterface = Pygame_UI()
@@ -37,7 +39,14 @@ class RoverRun(Rover):
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
-        self.stack = framestack       
+        self.stack = framestack 
+	self.film = film
+	if self.film is True:
+	    pygame.camera.init()
+            camlist = pygame.camera.list_cameras()
+	    if camlist:
+	        self.cam = pygame.camera.Camera(camlist[0],(640,480))
+	        self.cam.start()
 
         if framestack is False:
 	    self.network = input_data(shape=[None, 130, 320, 1])
@@ -53,9 +62,9 @@ class RoverRun(Rover):
 	self.run()
 
 
-
-
-
+    def film_run(self):
+        return pygame.surfarray.array3d(pygame.transform.rotate(self.cam.get_image(), 90))
+		
     def getActiveKey(self):
         key = None
         for event in pygame.event.get():
@@ -104,6 +113,8 @@ class RoverRun(Rover):
                 self.quit = True
 
 	    s=self.image
+	    a = self.film_run()
+	    cv2.imshow('webcam', a)
 	
 	    # grayscale and crop
 	    s=np.mean(s[None,110:,:,:], 3, keepdims=True)
