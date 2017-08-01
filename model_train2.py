@@ -44,7 +44,7 @@ val_accuracy = [] # variable to store the validation accuracy
 num_stack = 1
 val_name = 'Run_2_l_lights_on.h5' # Dataset to use for validation
 num_iters = 0.
-num_classes = 4
+num_classes = 3
 
 
 
