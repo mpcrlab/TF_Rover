@@ -29,6 +29,7 @@ print('What filename do you want to save this model as?')
 m_save = raw_input('Rover Used_number of frames/stackinterval_other parameters  ')
 
 # prompt the user for which model they want to train from NetworkSwitch.py
+print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - 10)?'))
 
 # define useful variables
