@@ -193,7 +193,7 @@ def ResNext1(network):
 
 ########################################################
 def LSTM1(network):
-    network = squeeze(image.rgb_to_grayscale(network),squeeze_dims=3)
+    #network = squeeze(image.rgb_to_grayscale(network),squeeze_dims=3)
     print(network.shape)
     network = tflearn.lstm(network, 128, return_seq=True)
     network = tflearn.lstm(network, 128)
