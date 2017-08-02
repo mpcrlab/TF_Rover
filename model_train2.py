@@ -39,10 +39,10 @@ epochs = 2000 # number of training iterations
 batch_sz = 100  # training batch size
 errors = []  # variable to store the validation losses
 test_num = 650  # Number of validation examples
-f_int = 2
-f_int2 = 5
+f_int = 10
+f_int2 = 30
 val_accuracy = [] # variable to store the validation accuracy
-num_stack = 1
+num_stack = 3
 val_name = 'Run_2_l_lights_on.h5' # Dataset to use for validation
 num_iters = 0.
 num_classes = 3
@@ -90,8 +90,9 @@ def batch_get(filename, batch_size):
 print('Validation Dataset: %s'%(val_name))
 
 # Create validation framestack
-#tx, ty = create_framestack(tx, ty, f_int, f_int2)
-#assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
+if num_stack != 1:
+    tx, ty = create_framestack(tx, ty, f_int, f_int2)
+assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
 
 
 # Create input layer and label placeholder for the network
@@ -140,7 +141,8 @@ for i in range(epochs):
     X = feature_scale(X)
 
     # framestack
-    #x, y = create_framestack(x, y, f_int, f_int2)
+    if num_stack != 1:
+        x, y = create_framestack(x, y, f_int, f_int2)
 
     # Data Augmentation
     X, Y = add_noise(X, Y)
