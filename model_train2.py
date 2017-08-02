@@ -89,12 +89,6 @@ def batch_get(filename, batch_size):
 # Validation set
 print('Validation Dataset: %s'%(val_name))
 
-# Create validation framestack
-if num_stack != 1:
-    tx, ty = create_framestack(tx, ty, f_int, f_int2)
-assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
-
-
 # Create input layer and label placeholder for the network
 labels = tf.placeholder(dtype=tf.float32, shape=[None, num_classes])
 network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
@@ -160,6 +154,11 @@ for i in range(epochs):
         
         # feature scale validation data
         tx = feature_scale(tx)
+        
+        # Create validation framestack
+        if num_stack != 1:
+            tx, ty = create_framestack(tx, ty, f_int, f_int2)
+        assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
         
         # Get validation accuracy and error rate
         val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
