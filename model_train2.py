@@ -158,7 +158,7 @@ for i in range(epochs):
         # Create validation framestack
         if num_stack != 1:
             tx, ty = create_framestack(tx, ty, f_int, f_int2)
-        assert(TY.shape[0] == TX.shape[0]),'data and label shapes do not match'
+        assert(ty.shape[0] == tx.shape[0]),'data and label shapes do not match'
         
         # Get validation accuracy and error rate
         val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
