@@ -136,7 +136,7 @@ for i in range(epochs):
 
     # framestack
     if num_stack != 1:
-        x, y = create_framestack(x, y, f_int, f_int2)
+        X, Y = create_framestack(X, Y, f_int, f_int2)
 
     # Data Augmentation
     X, Y = add_noise(X, Y)
