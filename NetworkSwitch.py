@@ -263,7 +263,7 @@ def LSTM1(network, scale=False):
         network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
         network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
         
-    network = squeeze(image.rgb_to_grayscale_ten(network),squeeze_dims=3)
+    #network = squeeze(image.rgb_to_grayscale_ten(network),squeeze_dims=3)
     print(network.shape)
     network = tflearn.lstm(network, 128, return_seq=True)
     network = tflearn.lstm(network, 128)
