@@ -409,12 +409,12 @@ def DenseNet(network, scale=False):
     k = 12
 
     # Depth (40, 100, ...)
-    L = 40
+    L = 18
     nb_layers = int((L - 4) / 3)
 
     # Building DenseNet Network
     
-    network = tflearn.conv_2d(network, 16, 3, regularizer='L2', weight_decay=0.0001)
+    network = tflearn.conv_2d(network, 10, 3, regularizer='L2', weight_decay=0.0001)
     network = denseblock(network, nb_layers, k)
     network = denseblock(network, nb_layers, k)
     network = denseblock(network, nb_layers, k)
