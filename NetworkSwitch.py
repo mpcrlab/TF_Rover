@@ -420,7 +420,7 @@ def DenseNet(network, scale=False):
     network = tflearn.global_avg_pool(network)
 
     # Regression
-    network = tflearn.fully_connected(network, 10, activation='softmax')
+    network = tflearn.fully_connected(network, 3, activation='softmax')
     
     return network
     
