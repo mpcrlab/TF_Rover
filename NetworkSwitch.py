@@ -11,6 +11,7 @@ from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_
 from tflearn.layers.normalization import local_response_normalization, batch_normalization
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
+import tflearn.layers.conv.densenet_block as denseblock
 
 #model_num = 1
 #epochs = 350
@@ -414,9 +415,9 @@ def DenseNet(network, scale=False):
     # Building DenseNet Network
     
     network = tflearn.conv_2d(network, 16, 3, regularizer='L2', weight_decay=0.0001)
-    network = tflearn.densenet_block(network, nb_layers, k)
-    network = tflearn.densenet_block(network, nb_layers, k)
-    network = tflearn.densenet_block(network, nb_layers, k)
+    network = tflearn.denseblock(network, nb_layers, k)
+    network = tflearn.denseblock(network, nb_layers, k)
+    network = tflearn.denseblock(network, nb_layers, k)
     network = tflearn.global_avg_pool(network)
 
     # Regression
