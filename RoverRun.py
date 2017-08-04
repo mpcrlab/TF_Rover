@@ -23,6 +23,7 @@ from tflearn.layers.estimator import regression
 import tensorflow as tf
 tf.reset_default_graph()
 import os
+from scipy.misc import bytescale
 
 
 class RoverRun(Rover):
@@ -155,7 +156,8 @@ class RoverRun(Rover):
 
 	    
         
-            cv2.imshow("RoverCam", self.image)
+            cv2.imshow("RoverCam", bytescale(np.mean(self.image[110:, ...], 2)))
+	    cv2.waitKey(1)
              
             self.clock.tick(self.FPS)
             pygame.display.flip()
