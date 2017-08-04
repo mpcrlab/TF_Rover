@@ -113,8 +113,10 @@ class RoverRun(Rover):
                 self.quit = True
 
 	    s=self.image
-	    a = self.film_run()
-	    cv2.imshow('webcam', a)
+	
+	    if self.film is True:
+	        a = self.film_run()
+	        cv2.imshow('webcam', a)
 	
 	    # grayscale and crop
 	    s=np.mean(s[None,110:,:,:], 3, keepdims=True)
