@@ -155,8 +155,8 @@ class RoverRun(Rover):
 
 	    
         
-            cv2.imshow("RoverCam", scipy.misc.bytescale(np.mean(self.image[110:, ...], 2)))
-	    cv2.waitKey(1)
+            #cv2.imshow("RoverCam", scipy.misc.bytescale(np.mean(self.image[110:, ...], 2)))
+	    #cv2.waitKey(1)
              
             self.clock.tick(self.FPS)
             pygame.display.flip()
