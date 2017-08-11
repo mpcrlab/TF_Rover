@@ -96,6 +96,8 @@ class RoverRun(Rover):
 
 
     def run(self):
+	
+	start_time = time.time()
 
         while type(self.image) == type(None):
             pass
@@ -129,13 +131,9 @@ class RoverRun(Rover):
                 current = s
 		self.framestack = np.concatenate((current, self.framestack[:, :, :, 1:]), 3)
 		s = self.framestack[:, :, :, self.stack]
-                #for i in range(len(self.stack)):
-                #    frame = self.framestack[self.stack['f_int{0}'.format(i)], :, :, :]
-                #    s = np.concatenate((s, frame[None, :, :, :]), 3)
 	    
             self.angle = self.model.predict(s)
 	    self.angle = np.argmax(self.angle)
-	    
 	    
 	    os.system('clear')
 	    print(self.angle)
@@ -162,7 +160,9 @@ class RoverRun(Rover):
             pygame.display.flip()
             self.userInterface.screen.fill((255,255,255))
 
-
+	elapsed_time = np.round(time.time() - start_time, 2)
+	print('This run lasted %.2f seconds'%(elapsed_time))
+	
         self.set_wheel_treads(0,0)
         
         pygame.quit()
