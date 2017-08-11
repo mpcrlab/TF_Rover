@@ -58,7 +58,8 @@ class RoverRun(Rover):
 
 	self.network = DNN1(self.network)
 	self.model = tflearn.DNN(self.network)
-	self.model.load('/home/TF_Rover/RoverData/Felix_3frames10-20_FeatureScaling_DNN1')
+	self.model.load('/home/TF_Rover/RoverData/Felix_3frames10-20_FeatureScaling_DNN1',
+		       weights_only=True)
 	self.run()
 
 
@@ -132,6 +133,7 @@ class RoverRun(Rover):
 		self.framestack = np.concatenate((current, self.framestack[:, :, :, 1:]), 3)
 		s = self.framestack[:, :, :, self.stack]
 	    
+	    # predict the correct steering angle from input
             self.angle = self.model.predict(s)
 	    self.angle = np.argmax(self.angle)
 	    
