@@ -6,7 +6,7 @@ if __name__ == '__main__':
         if a in ['a', 'A']:
             b = raw_input('Stack or no stack (y/n)? ')
 	    if b in ['Y', 'y']:
-                rover = RoverRun(framestack=[2, 5])
+                rover = RoverRun(framestack=[5, 15])
             else:
                 rover = RoverRun()
         else:
