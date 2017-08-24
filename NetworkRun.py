@@ -321,7 +321,7 @@ def GoogLeNet1(network):
     
 ########################################################
 
-def DenseNet(network, scale=False):
+def DenseNet1(network, scale=False):
     if scale is True:
         network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
         mean, var = tf.nn.moments(network, [0])
