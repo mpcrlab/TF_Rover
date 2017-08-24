@@ -7,6 +7,7 @@ from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_
 from tflearn.layers.normalization import local_response_normalization, batch_normalization
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
+from tflearn.layers.conv import densenet_block as denseblock
 
 
 
