@@ -320,5 +320,32 @@ def GoogLeNet1(network):
     return network
     
 ########################################################
+
+def DenseNet(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
+    # Growth Rate (12, 16, 32, ...)
+    k = 12
+
+    # Depth (40, 100, ...)
+    L = 18
+    nb_layers = int((L - 4) / 3)
+
+    # Building DenseNet Network
+    
+    network = tflearn.conv_2d(network, 10, 3, regularizer='L2', weight_decay=0.0001)
+    network = denseblock(network, nb_layers, k)
+    network = denseblock(network, nb_layers, k)
+    network = denseblock(network, nb_layers, k)
+    network = tflearn.global_avg_pool(network)
+
+    # Regression
+    network = tflearn.fully_connected(network, 3, activation='softmax')
+    
+    return network
 ########################################################
 ########################################################
