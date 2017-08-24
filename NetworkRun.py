@@ -339,9 +339,9 @@ def DenseNet1(network, scale=False):
     # Building DenseNet Network
     
     network = tflearn.conv_2d(network, 10, 3, regularizer='L2', weight_decay=0.0001)
-    network = densenet_block(network, nb_layers, k)
-    network = densenet_block(network, nb_layers, k)
-    network = densenet_block(network, nb_layers, k)
+    network = denseblock(network, nb_layers, k)
+    network = denseblock(network, nb_layers, k)
+    network = denseblock(network, nb_layers, k)
     network = tflearn.global_avg_pool(network)
 
     # Regression
