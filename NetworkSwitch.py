@@ -406,18 +406,18 @@ def DenseNet(network, scale=False):
         network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
         
     # Growth Rate (12, 16, 32, ...)
-    k = 12
+    k = 3
 
     # Depth (40, 100, ...)
-    L = 18
+    L = 28
     nb_layers = int((L - 4) / 3)
 
     # Building DenseNet Network
     
     network = tflearn.conv_2d(network, 10, 3, regularizer='L2', weight_decay=0.0001)
-    network = denseblock(network, nb_layers, k)
-    network = denseblock(network, nb_layers, k)
-    network = denseblock(network, nb_layers, k)
+    network = denseblock(network, nb_layers, k, dropout=0.6)
+    network = denseblock(network, nb_layers, k, dropout=0.6)
+    network = denseblock(network, nb_layers, k, dropout=0.6)
     network = tflearn.global_avg_pool(network)
 
     # Regression
