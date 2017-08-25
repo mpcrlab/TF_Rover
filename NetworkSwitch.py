@@ -448,8 +448,8 @@ def RCNN1(network, scale=False):
     network = dropout(network, 0.5)
     network = fully_connected(network, 4096, activation='tanh')
     network = dropout(network, 0.5)
-    net = tflearn.lstm(net, 128, dropout=0.8)
-    net = tflearn.fully_connected(net, 3, activation='softmax')
+    network = tflearn.lstm(network, 128, dropout=0.7)
+    network = tflearn.fully_connected(network, 3, activation='softmax')
     
     return network
 
