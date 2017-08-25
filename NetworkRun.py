@@ -330,10 +330,10 @@ def DenseNet1(network, scale=False):
         network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
         
     # Growth Rate (12, 16, 32, ...)
-    k = 12
+    k = 3
 
     # Depth (40, 100, ...)
-    L = 18
+    L = 28
     nb_layers = int((L - 4) / 3)
 
     # Building DenseNet Network
