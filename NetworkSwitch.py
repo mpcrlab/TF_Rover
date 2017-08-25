@@ -444,10 +444,9 @@ def RCNN1(network, scale=False):
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
-    network = fully_connected(network, 4096, activation='tanh')
+    network = fully_connected(network, 2500, activation='tanh')
     network = dropout(network, 0.5)
-    network = fully_connected(network, 4096, activation='tanh')
-    network = dropout(network, 0.5)
+    network = fully_connected(network, 2500, activation='tanh')
     network = tflearn.lstm(network, 128, dropout=0.7)
     network = tflearn.fully_connected(network, 3, activation='softmax')
     
