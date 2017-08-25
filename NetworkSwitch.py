@@ -426,6 +426,33 @@ def DenseNet(network, scale=False):
     return network
     
 ########################################################
+def RCNN1(network, scale=False):
+    if scale is True:
+        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
+        mean, var = tf.nn.moments(network, [0])
+        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
+        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+        
+    network = conv_2d(network, 96, 11, strides=4, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = conv_2d(network, 256, 5, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 256, 3, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = fully_connected(network, 4096, activation='tanh')
+    network = dropout(network, 0.5)
+    network = fully_connected(network, 4096, activation='tanh')
+    network = dropout(network, 0.5)
+    net = tflearn.lstm(net, 128, dropout=0.8)
+    net = tflearn.fully_connected(net, 3, activation='softmax')
+    
+    return network
+
 ########################################################
 ########################################################
 
@@ -444,6 +471,7 @@ modelswitch = {
     9 : GoogLeNet1,
     10 : LSTM1,
     11 : DenseNet,
+    12 : RCNN1,
 }
 
 
