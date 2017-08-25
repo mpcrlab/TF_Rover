@@ -30,7 +30,7 @@ m_save = raw_input('Rover Used_number of frames/stackinterval_other parameters  
 
 # prompt the user for which model they want to train from NetworkSwitch.py
 print(modelswitch)
-model_num = np.int32(raw_input('Which model do you want to train (0 - 11)?'))
+model_num = np.int32(raw_input('Which model do you want to train (0 - 12)?'))
 
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right')
