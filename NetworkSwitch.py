@@ -453,6 +453,12 @@ def RCNN1(network, scale=False):
     return network
 
 ########################################################
+def lstm2(network):
+    network = lstm(network, 10000, dropout=0.7, activation='relu')
+    network = tflearn.fully_connected(network, 3, activation='softmax')
+    
+    return network 
+
 ########################################################
 
 
@@ -471,6 +477,7 @@ modelswitch = {
     10 : LSTM1,
     11 : DenseNet,
     12 : RCNN1,
+    13 : lstm2,
 }
 
 
