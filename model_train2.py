@@ -35,10 +35,10 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 12)?'))
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right')
 fnames = glob.glob('*.h5') # datasets to train on
-epochs = 5000 # number of training iterations
+epochs = 10000 # number of training iterations
 batch_sz = 80  # training batch size
 errors = []  # variable to store the validation losses
-test_num = 650  # Number of validation examples
+test_num = 100  # Number of validation examples
 f_int = 5
 f_int2 = 15
 val_accuracy = [] # variable to store the validation accuracy
@@ -76,9 +76,9 @@ def batch_get(filename, batch_size):
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
-    Y = np.zeros([batch_sz, num_classes])
-    rand = np.random.randint(f_int2, X.shape[0], batch_sz)
-    Y[np.arange(batch_sz), y[rand]] = 1.0 # create one-hot label vector
+    Y = np.zeros([batch_size, num_classes])
+    rand = np.random.randint(f_int2, X.shape[0], batch_size)
+    Y[np.arange(batch_size), y[rand]] = 1.0 # create one-hot label vector
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
     f.flush()
@@ -106,7 +106,7 @@ merged = tf.summary.merge_all()
 
 
 # gradient descent optimizer
-opt = tf.train.AdamOptimizer(learning_rate=0.0001)
+opt = tf.train.AdamOptimizer(learning_rate=5e-8)
 trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
                          metric=None,
