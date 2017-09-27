@@ -106,7 +106,7 @@ merged = tf.summary.merge_all()
 
 
 # gradient descent optimizer
-opt = tf.train.AdamOptimizer(learning_rate=5e-8)
+opt = tf.train.AdamOptimizer(learning_rate=1e-6)
 trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
                          metric=None,
