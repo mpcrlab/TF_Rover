@@ -55,11 +55,6 @@ def flip(x, y):
         x = np.concatenate((x, x_flipped[None, :, :, :]), 0)
         y_flipped = y[i, :]
         y = np.concatenate((y, np.fliplr(y_flipped[None, :])), 0)
-        imshow(x[i, :, :, 0])
-        print(y[i, :])
-        imshow(x[i+x_shp, :, :, 0])
-        print(y[i+x_shp, :])
-        
     return x, y
         
 
