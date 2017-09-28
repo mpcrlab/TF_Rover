@@ -51,7 +51,8 @@ num_classes = 3
 def flip(x, y):
     x_shp = x.shape[0]
     for i in range(x_shp):
-        x = np.concatenate((x, np.fliplr(x[i, :, :, :])), 0)
+        x_flipped = np.fliplr(x[i, :, :, :])
+        x = np.concatenate((x, x_flipped[None, :, :, :]), 0)
         y_flipped = y[i, :]
         y = np.concatenate((y, np.fliplr(y_flipped[None, :])), 0)
         imshow(x[i, :, :, 0])
