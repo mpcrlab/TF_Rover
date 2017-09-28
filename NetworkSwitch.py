@@ -13,15 +13,9 @@ from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
 from tflearn.layers.conv import densenet_block as denseblock
 
-#model_num = 1
-#epochs = 350
 num_cols = 320
 num_rows = 130
-#num_channels = 1
 
-
-# Building Input
-#network = input_data(shape=[None, num_rows, num_cols, num_channels])
 
 ########################################################
 def DNN1(network, scale=False):
@@ -37,7 +31,6 @@ def DNN1(network, scale=False):
     network = tflearn.fully_connected(network, 3, activation='softmax')
     
     return network
-
 
 
 ########################################################
@@ -481,23 +474,3 @@ modelswitch = {
 }
 
 
-#network = modelswitch[model_num](network, scale=True)
-
-
-
-
-#network = regression(network, optimizer='momentum', loss='categorical_crossentropy', learning_rate=0.001)
-
-
-
-
-#model = tflearn.DNN(network, checkpoint_path='model_zoo', max_checkpoints=1, tensorboard_verbose=0)
-
-
-
-
-#model.fit(X, Y, n_epoch=epochs, validation_set=0.1, shuffle=True, show_metric=True, batch_size=50, snapshot_step=200,
-#          snapshot_epoch=False, run_id='rover_gray_oneframe_' + modelswitch[model_num].__name__)
-
-
-#model.save(model_name + modelswitch[model_num].__name__)
