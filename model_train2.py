@@ -21,6 +21,7 @@ import cv2
 sys.argv += [0.5]
 from NetworkSwitch import *
 from sklearn.preprocessing import scale
+from scipy.misc import imshow
 
 
 # prompt the user to choose the name of the saved model
@@ -34,7 +35,7 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 12)?'))
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right')
 fnames = glob.glob('*.h5') # datasets to train on
-epochs = 10000 # number of training iterations
+epochs = 10001 # number of training iterations
 batch_sz = 80  # training batch size
 errors = []  # variable to store the validation losses
 test_num = 100  # Number of validation examples
@@ -46,6 +47,20 @@ val_name = 'Run_2_l_lights_on.h5' # Dataset to use for validation
 num_iters = 0.
 num_classes = 3
 
+
+def flip(x, y):
+    x_shp = x.shape[0]
+    for i in range(x_shp):
+        x = np.concatenate((x, np.fliplr(x[i, :, :, :])), 0)
+        y_flipped = y[i, :]
+        y = np.concatenate((y, np.fliplr(y_flipped[None, :])), 0)
+        imshow(x[i, :, :, 0])
+        print(y[i, :])
+        imshow(x[i+x_shp, :, :, 0])
+        print(y[i+x_shp, :])
+        
+    return x, y
+        
 
 
 def add_noise(x, y):
@@ -105,7 +120,7 @@ merged = tf.summary.merge_all()
 
 
 # gradient descent optimizer
-opt = tf.train.AdamOptimizer(learning_rate=1e-6)
+opt = tf.train.AdamOptimizer(learning_rate=5e-6)
 trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
                          metric=None,
@@ -132,6 +147,9 @@ for i in range(epochs):
 
     # local feature Scaling
     X = feature_scale(X)
+    
+    # augmentation - flipping left to right
+    X, Y = flip(X, Y)
 
     # framestack
     if num_stack != 1:
@@ -147,7 +165,7 @@ for i in range(epochs):
     train_summary = model.session.run(merged, feed_dict={network:X, labels:Y})
     writer2.add_summary(train_summary, i)
           
-    if i%50 == 0:
+    if i%20 == 0:
         # get validation batch
         tx, ty = batch_get(val_name, 600)
         
