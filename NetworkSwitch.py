@@ -1,7 +1,8 @@
 import tflearn
+import argparse
 import tensorflow as tf
 import h5py
-import os
+import os, sys
 import numpy as np
 from tensorflow import image
 from sklearn.preprocessing import scale
@@ -15,6 +16,7 @@ from tflearn.layers.conv import densenet_block as denseblock
 
 num_cols = 320
 num_rows = 130
+drop_prob = sys.argv[1]
 
 
 ########################################################
@@ -25,9 +27,11 @@ def DNN1(network, scale=False):
         network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
         network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
     network = tflearn.fully_connected(network, 64, activation='tanh',regularizer='L2', weight_decay=0.001)
-    network = tflearn.dropout(network, 0.8)
+    network = tflearn.dropout(network, drop_prob)
     network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
-    network = tflearn.dropout(network, 0.8)
+    network = tflearn.dropout(network, drop_prob)
+    network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
+    network = tflearn.dropout(network, drop_prob)
     network = tflearn.fully_connected(network, 3, activation='softmax')
     
     return network
@@ -47,9 +51,9 @@ def Conv1(network, scale=False):
     network = max_pool_2d(network, 2)
     network = local_response_normalization(network)
     network = fully_connected(network, 128, activation='tanh')
-    network = dropout(network, 0.8)
+    network = dropout(network, drop_prob)
     network = fully_connected(network, 256, activation='tanh')
-    network = dropout(network, 0.8)
+    network = dropout(network, drop_prob)
     network = fully_connected(network, 3, activation='softmax')
     
     return network
@@ -76,9 +80,9 @@ def Alex1(network, scale=False):
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
     network = fully_connected(network, 4096, activation='tanh')
-    network = dropout(network, 0.5)
+    network = dropout(network, drop_prob)
     network = fully_connected(network, 4096, activation='tanh')
-    network = dropout(network, 0.5)
+    network = dropout(network, drop_prob)
     network = fully_connected(network, 3, activation='softmax')
     
     return network
@@ -117,9 +121,9 @@ def VGG1(network, scale=False):
     network = max_pool_2d(network, 2, strides=2)
 
     network = fully_connected(network, 4096, activation='relu')
-    network = dropout(network, 0.5)
+    network = dropout(network, drop_prob)
     network = fully_connected(network, 4096, activation='relu')
-    network = dropout(network, 0.5)
+    network = dropout(network, drop_prob)
     network = fully_connected(network, 3, activation='softmax')
     
     return network
@@ -180,12 +184,12 @@ def Net_in_Net1(network, scale=False):
     network = conv_2d(network, 160, 1, activation='relu')
     network = conv_2d(network, 96, 1, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
-    network = dropout(network, 0.5)
+    network = dropout(network, drop_prob)
     network = conv_2d(network, 192, 5, activation='relu')
     network = conv_2d(network, 192, 1, activation='relu')
     network = conv_2d(network, 192, 1, activation='relu')
     network = avg_pool_2d(network, 3, strides=2)
-    network = dropout(network, 0.5)
+    network = dropout(network, drop_prob)
     network = conv_2d(network, 192, 3, activation='relu')
     network = conv_2d(network, 192, 1, activation='relu')
     network = conv_2d(network, 10, 1, activation='relu')
@@ -408,9 +412,9 @@ def DenseNet(network, scale=False):
     # Building DenseNet Network
     
     network = tflearn.conv_2d(network, 10, 3, regularizer='L2', weight_decay=0.0001)
-    network = denseblock(network, nb_layers, k, dropout=0.6)
-    network = denseblock(network, nb_layers, k, dropout=0.6)
-    network = denseblock(network, nb_layers, k, dropout=0.6)
+    network = denseblock(network, nb_layers, k, dropout=drop_prob)
+    network = denseblock(network, nb_layers, k, dropout=drop_prob)
+    network = denseblock(network, nb_layers, k, dropout=drop_prob)
     network = tflearn.global_avg_pool(network)
 
     # Regression
