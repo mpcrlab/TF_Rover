@@ -18,10 +18,9 @@ from tflearn.data_augmentation import ImageAugmentation
 import sys
 import os
 import cv2
+sys.argv += [0.5]
 from NetworkSwitch import *
 from sklearn.preprocessing import scale
-
-
 
 
 # prompt the user to choose the name of the saved model
