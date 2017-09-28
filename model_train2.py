@@ -38,7 +38,6 @@ fnames = glob.glob('*.h5') # datasets to train on
 epochs = 10001 # number of training iterations
 batch_sz = 80  # training batch size
 errors = []  # variable to store the validation losses
-test_num = 100  # Number of validation examples
 f_int = 5
 f_int2 = 15
 val_accuracy = [] # variable to store the validation accuracy
@@ -161,7 +160,7 @@ for i in range(epochs):
     train_summary = model.session.run(merged, feed_dict={network:X, labels:Y})
     writer2.add_summary(train_summary, i)
           
-    if i%20 == 0:
+    if i%100 == 0:
         # get validation batch
         tx, ty = batch_get(val_name, 600)
         
