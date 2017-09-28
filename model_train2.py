@@ -148,15 +148,15 @@ for i in range(epochs):
 
     # local feature Scaling
     X = feature_scale(X)
-    
-    # augmentation - flipping left to right
-    X, Y = flip(X, Y)
 
     # framestack
     if num_stack != 1:
         X, Y = create_framestack(X, Y, f_int, f_int2)
+        
+    # augmentation - flipping left to right
+    X, Y = flip(X, Y)
 
-    # Data Augmentation
+    # Data Augmentation - adding noise
     X, Y = add_noise(X, Y)
 
     # Training
