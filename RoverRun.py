@@ -3,7 +3,9 @@ import pygame
 from Data import *
 import pygame.camera
 from pygame.locals import *
-from NetworkRun import *
+import os, sys
+sys.argv += [1.0]
+from NetworkSwitch import *
 from Pygame_UI import *
 from rover import Rover
 import cv2
@@ -22,7 +24,6 @@ from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.estimator import regression
 import tensorflow as tf
 tf.reset_default_graph()
-import os
 
 
 class RoverRun(Rover):
@@ -170,5 +171,3 @@ class RoverRun(Rover):
         pygame.quit()
         cv2.destroyAllWindows()
         self.close()
-
-
