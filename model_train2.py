@@ -35,12 +35,10 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 12)?'))
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right')
 fnames = glob.glob('*.h5') # datasets to train on
-epochs = 10001 # number of training iterations
+epochs = 15001 # number of training iterations
 batch_sz = 80  # training batch size
-errors = []  # variable to store the validation losses
 f_int = 5
 f_int2 = 15
-val_accuracy = [] # variable to store the validation accuracy
 num_stack = 3
 val_name = 'Run_2_l_lights_on.h5' # Dataset to use for validation
 num_iters = 0.
@@ -126,6 +124,10 @@ writer = tf.summary.FileWriter('/tmp/tflearn_logs/test'+m_save+modelswitch[model
                                model.session.graph)
 writer2 = tf.summary.FileWriter('/tmp/tflearn_logs/train'+m_save+modelswitch[model_num].__name__,
                                model.session.graph)
+
+
+
+################################## Main Loop #######################################
 
 for i in range(epochs):
     
