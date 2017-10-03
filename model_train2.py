@@ -24,9 +24,7 @@ from sklearn.preprocessing import scale
 from scipy.misc import imshow
 
 
-# prompt the user to choose the name of the saved model
-print('What filename do you want to save this model as?')
-m_save = raw_input('Rover Used_number of frames/stackinterval_other parameters  ')
+m_save = 'Felix_3frames5,15_GrayCropped_RightAllDrivers_'
 
 # prompt the user for which model they want to train from NetworkSwitch.py
 print(modelswitch)
