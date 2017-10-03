@@ -35,7 +35,7 @@ model_num = np.int32(raw_input('Which model do you want to train (0 - 12)?'))
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right')
 fnames = glob.glob('*.h5') # datasets to train on
-epochs = 15001 # number of training iterations
+epochs = 20001 # number of training iterations
 batch_sz = 80  # training batch size
 f_int = 5
 f_int2 = 15
