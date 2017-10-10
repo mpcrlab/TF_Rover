@@ -1,5 +1,4 @@
 import tflearn
-import argparse
 import tensorflow as tf
 import h5py
 import os, sys
