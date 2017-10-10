@@ -1,5 +1,4 @@
 import os, sys
-import tensorflow
 sys.exit(0)
 import tflearn
 import h5py
