@@ -4,7 +4,6 @@ import tflearn
 import h5py
 import numpy as np
 from sklearn.preprocessing import scale
-from tensorflow import squeeze
 from tflearn.layers.core import input_data, dropout, fully_connected, flatten
 from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_2d
 from tflearn.layers.normalization import local_response_normalization, batch_normalization
