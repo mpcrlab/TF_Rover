@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import time
 import math
+from scipy.misc import bytescale
 
 class RoverSimple(Rover):
     def __init__(self):
@@ -14,10 +15,10 @@ class RoverSimple(Rover):
         self.d = Data()
         self.userInterface = Pygame_UI()
         self.clock = pygame.time.Clock()
-        self.FPS = 30
+        self.FPS = 30 #30 FRAMES PER SECOND
         self.image = None
         self.quit = False
-        self.paused = False
+        self.paused = True
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
@@ -59,39 +60,56 @@ class RoverSimple(Rover):
         self.userInterface.display_message("Number of Frames Collected: " + str(len(self.d.angles)), black, 0, self.userInterface.fontSize*7)
 
 
-
+	############################################################
     def run(self):
 
-        while type(self.image) == type(None):
+        while type(self.image) == type(None): 
             pass
 
 
         while not self.quit:
             self.displayDashboard()
+   	    
+	    num_changes = 0
+	    previous_key = 'w'
 
-            
        	    key = self.getActiveKey()
             if key:
                 key = chr(key)
-            if key in ['w','a','d']:
+            if key in ['w','a','d','s','q',' ']:
                 
 		if key == 'w':
 		    self.angle = 0
+
 		elif key == 'a':
 		    self.angle = -1
+
 		elif key == 'd':
 		    self.angle = 1
+
+		elif key == 's':
+		    self.angle = 2
+
+		elif key == 'q':
+		    self.angle = 9
+
+		elif key == ' ':
+		    self.angle = -9
+
+	        if key != previous_key:
+		  num_changes == num_changes + 1
+		  previous_key = key
 
 
             elif key == 'z':
                 self.quit = True
-            elif key == ' ':
+            elif key == 'q':
                 self.set_wheel_treads(0,0)
             elif key == 'p':
                 self.eraseFrames(self.FPS)
 
 
-	    speed=0.5
+	    speed=.5
 
             if self.angle == -1:
                 self.treads = [-speed,speed]
@@ -99,16 +117,27 @@ class RoverSimple(Rover):
                self.treads = [speed, speed]
             elif self.angle == 1:
                self.treads = [speed,-speed]
+	    elif self.angle == 2:
+               self.treads = [-speed,-speed]
+	    elif self.angle == 9:
+	       self.treads = [0,0]
+	    elif self.angle == -9:
+	       self.treads = [0,0]
+
 
 
 	    self.set_wheel_treads(self.treads[0],self.treads[1])
 
 
 	    print(self.angle)
-            self.d.angles.append(self.angle)
-            self.d.images.append(self.image)
+
+	    if self.angle != 9:
+           	self.d.angles.append(self.angle)
+           	self.d.images.append(self.image)
+		print("collecting data")
         
-            cv2.imshow("RoverCam", self.image)
+            cv2.imshow("RoverCam",self.image[60:, ...])
+            cv2.waitKey(1)
              
             self.clock.tick(self.FPS)
             pygame.display.flip()
@@ -120,5 +149,4 @@ class RoverSimple(Rover):
         pygame.quit()
         cv2.destroyAllWindows()
         self.close()
-
 
