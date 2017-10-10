@@ -59,7 +59,9 @@ class RoverRun(Rover):
 
 	self.network = DNN1(self.network)
 	self.model = tflearn.DNN(self.network)
-	self.model.load('/home/TF_Rover/RoverData/Felix_3frames10-20_FeatureScaling_DNN1',
+	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
+	fileName = fileName[0]
+	self.model.load(fileName[:-6],
 		       weights_only=True)
 	self.run()
 
