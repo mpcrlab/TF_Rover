@@ -1,7 +1,8 @@
+import os, sys
 import tensorflow
+sys.exit(0)
 import tflearn
 import h5py
-import os, sys
 import numpy as np
 from sklearn.preprocessing import scale
 from tensorflow import squeeze
