@@ -1,5 +1,4 @@
 import os, sys
-sys.exit(0)
 import tflearn
 import h5py
 import numpy as np
