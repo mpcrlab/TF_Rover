@@ -1,11 +1,11 @@
 from __future__ import print_function
 import pygame
 from Data import *
+from NetworkSwitch import *
 import pygame.camera
 from pygame.locals import *
 import os, sys
 sys.argv += [1.0]
-from NetworkSwitch import *
 from Pygame_UI import *
 from rover import Rover
 import cv2
