@@ -92,6 +92,7 @@ class RoverSimple(Rover):
 
 		elif key == 'q':
 		    self.angle = 9
+		    self.set_wheel_treads(0,0)
 
 		elif key == ' ':
 		    self.angle = -9
@@ -103,8 +104,6 @@ class RoverSimple(Rover):
 
             elif key == 'z':
                 self.quit = True
-            elif key == 'q':
-                self.set_wheel_treads(0,0)
             elif key == 'p':
                 self.eraseFrames(self.FPS)
 
@@ -136,7 +135,7 @@ class RoverSimple(Rover):
            	self.d.images.append(self.image)
 		print("collecting data")
         
-            cv2.imshow("RoverCam",self.image[60:, ...])
+            cv2.imshow("RoverCam",self.image[110:, ...])
             cv2.waitKey(1)
              
             self.clock.tick(self.FPS)
