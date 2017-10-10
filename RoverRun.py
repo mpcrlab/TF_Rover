@@ -9,7 +9,6 @@ from NetworkSwitch import *
 from Pygame_UI import *
 from rover import Rover
 import cv2
-import numpy as np
 import time
 import math
 import numpy as np
@@ -17,7 +16,6 @@ import h5py
 import tflearn
 import matplotlib.pyplot as plt
 import scipy.misc
-import math
 from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.normalization import local_response_normalization
@@ -60,7 +58,7 @@ class RoverRun(Rover):
 	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
 	fileName = fileName[0]
 	modelFind = fileName[fileName.find(_)+1:-6]
-	self.network = locals()[modelFind](self.network)
+	self.network = globals()[modelFind](self.network)
 	self.model = tflearn.DNN(self.network)
 	self.model.load(fileName[:-6],
 		       weights_only=True)
