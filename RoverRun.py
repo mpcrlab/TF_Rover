@@ -13,7 +13,6 @@ import time
 import math
 import numpy as np
 import h5py
-import tflearn
 import matplotlib.pyplot as plt
 import scipy.misc
 import tensorflow as tf
