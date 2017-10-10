@@ -1,11 +1,9 @@
 from __future__ import print_function
 import pygame
 from Data import *
-from NetworkSwitch import *
 import pygame.camera
 from pygame.locals import *
 import os, sys
-sys.argv += [1.0]
 from Pygame_UI import *
 from rover import Rover
 import cv2
@@ -15,6 +13,8 @@ import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 import scipy.misc
+sys.argv += [1.0]
+from NetworkSwitch import *
 import tensorflow as tf
 tf.reset_default_graph()
 
