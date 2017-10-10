@@ -139,12 +139,12 @@ class RoverRun(Rover):
 	    print(self.angle)
             print(self.image.shape)	
 
-	    speed=0.303
+	    speed=0.4
 
             if self.angle == 0:
                 self.treads = [-speed,speed]
             elif self.angle == 1:
-               self.treads = [speed, speed]
+               self.treads = [.303, .303]
             elif self.angle == 2:
                self.treads = [speed,-speed]
 
