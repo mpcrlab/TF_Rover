@@ -1,5 +1,4 @@
 import tflearn
-import tensorflow as tf
 import h5py
 import os, sys
 import numpy as np
