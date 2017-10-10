@@ -57,10 +57,11 @@ class RoverRun(Rover):
 	    self.stack.append(0)
             self.stack.sort()
 
-	self.network = DNN1(self.network)
-	self.model = tflearn.DNN(self.network)
 	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
 	fileName = fileName[0]
+	modelFind = fileName[fileName.find(_)+1:-6]
+	self.network = locals()[modelFind](self.network)
+	self.model = tflearn.DNN(self.network)
 	self.model.load(fileName[:-6],
 		       weights_only=True)
 	self.run()
