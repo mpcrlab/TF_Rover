@@ -53,7 +53,7 @@ class RoverRun(Rover):
 
 	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
 	fileName = fileName[0]
-	modelFind = fileName[fileName.find('_', 70, len(fileName))+1:-6]
+	modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-6]
 	self.network = globals()[modelFind](self.network)
 	self.model = tflearn.DNN(self.network)
 	self.model.load(fileName[:-6],
