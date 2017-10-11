@@ -146,7 +146,7 @@ class RoverRun(Rover):
             elif self.angle == 1:
                self.treads = [speed, speed]
             elif self.angle == 2:
-               self.treads = [speed - 0.1,-(speed - 0.1)]
+               self.treads = [speed - 0.07,-(speed - 0.07)]
 	    elif self.angle == 3:
 		self.treads = [-speed, -speed]
 
