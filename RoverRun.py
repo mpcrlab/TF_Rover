@@ -142,11 +142,13 @@ class RoverRun(Rover):
 	    speed=.5
 
             if self.angle == 0:
-                self.treads = [-speed,speed]
+                self.treads = [-(speed - 0.1),speed - 0.1]
             elif self.angle == 1:
                self.treads = [speed, speed]
             elif self.angle == 2:
-               self.treads = [speed,-speed]
+               self.treads = [speed - 0.1,-(speed - 0.1)]
+	    elif self.angle == 3:
+		self.treads = [-speed, -speed]
 
 
 	    self.set_wheel_treads(self.treads[0],self.treads[1])
