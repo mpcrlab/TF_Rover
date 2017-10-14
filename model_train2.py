@@ -20,7 +20,6 @@ from NetworkSwitch import *
 from sklearn.preprocessing import scale
 from scipy.misc import imshow
 
-sys.exit(0)
 
 m_save = 'Felix_3frames5,15_GrayCropped_RightAllDrivers_'
 
@@ -39,6 +38,7 @@ num_stack = 3
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
 
+sys.exit(0)
 
 def add_noise(x, y):
     x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
