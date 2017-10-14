@@ -31,26 +31,15 @@ print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - 12)?'))
 
 # define useful variables
-os.chdir('/home/TF_Rover/RoverData/Right')
+os.chdir('/home/TF_Rover/RoverData/Right2')
 fnames = glob.glob('*.h5') # datasets to train on
 epochs = 20001 # number of training iterations
 batch_sz = 80  # training batch size
 f_int = 5
 f_int2 = 15
 num_stack = 3
-val_name = 'Run_2_l_lights_on.h5' # Dataset to use for validation
-num_classes = 3
-
-
-def flip(x, y):
-    x_shp = x.shape[0]
-    for i in range(x_shp):
-        x_flipped = np.fliplr(x[i, :, :, :])
-        x = np.concatenate((x, x_flipped[None, :, :, :]), 0)
-        y_flipped = y[i, :]
-        y = np.concatenate((y, np.fliplr(y_flipped[None, :])), 0)
-    return x, y
-        
+val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
+num_classes = 4
 
 
 def add_noise(x, y):
@@ -110,7 +99,7 @@ merged = tf.summary.merge_all()
 
 
 # gradient descent optimizer
-opt = tf.train.AdamOptimizer(learning_rate=5e-6)
+opt = tf.train.AdamOptimizer(learning_rate=8e-6)
 trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
                          metric=None,
@@ -145,9 +134,6 @@ for i in range(epochs):
     # framestack
     if num_stack != 1:
         X, Y = create_framestack(X, Y, f_int, f_int2)
-        
-    # augmentation - flipping left to right
-    X, Y = flip(X, Y)
 
     # Data Augmentation - adding noise
     X, Y = add_noise(X, Y)
