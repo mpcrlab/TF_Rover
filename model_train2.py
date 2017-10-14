@@ -66,7 +66,6 @@ def batch_get(filename, batch_size):
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
-    print(y.shape)
     rand = np.random.randint(f_int2, X.shape[0], batch_size)
     Y = np.zeros([batch_size, num_classes])
     Y[np.arange(batch_size), y[rand]] = 1.0
