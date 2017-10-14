@@ -45,7 +45,7 @@ num_classes = 4
 def add_noise(x, y):
     x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
     x = np.concatenate((x, x_aug), 0)
-    y.append(y)
+    y = np.concatenate((y, y), 0)
     return x, y
 
 
@@ -56,8 +56,8 @@ def create_framestack(x, y, f_int, f_int2):
         X2 = x[ex_num-f_int, :, :, :]
         X3 = x[ex_num-f_int2, :, :, :]
         X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
-        Y_.append(y[ex_num])
-    return np.asarray(X_), Y_
+        Y_.append(y[ex_num, :])
+    return np.asarray(X_), np.asarray(Y_)
 
 
 def feature_scale(x):
@@ -68,9 +68,11 @@ def feature_scale(x):
 def batch_get(filename, batch_size):
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
-    Y = np.int32(f['Y']) + 1
+    y = np.int32(f['Y']) + 1
+    print(y.shape)
     rand = np.random.randint(f_int2, X.shape[0], batch_size)
-    Y = Y[rand]
+    Y = np.zeros[batch_size, num_classes])
+    Y[np.arange(batch_size), y[rand]] = 1.0
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
     f.flush()
@@ -136,7 +138,6 @@ for i in range(epochs):
 
     # Data Augmentation - adding noise
     X, Y = add_noise(X, Y)
-    Y = tf.one_hot(Y, num_classes)
 
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
@@ -155,8 +156,6 @@ for i in range(epochs):
         # Create validation framestack
         if num_stack != 1:
             tx, ty = create_framestack(tx, ty, f_int, f_int2)
-         
-        ty = tf.one_hot(ty, num_classes)
         
         assert(len(ty) == tx.shape[0]),'data and label shapes do not match'
         
