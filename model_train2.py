@@ -38,7 +38,6 @@ num_stack = 3
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
 
-sys.exit(0)
 
 def add_noise(x, y):
     x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
@@ -119,6 +118,8 @@ for i in range(epochs):
     # pick random dataset for this epoch
     n = np.random.randint(1, len(fnames)-1, 1)
     filename = fnames[n[0]]
+    
+    sys.exit(0)
     
     # skip validation set if chosen
     if filename == val_name: 
