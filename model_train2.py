@@ -45,7 +45,7 @@ num_classes = 4
 def add_noise(x, y):
     x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
     x = np.concatenate((x, x_aug), 0)
-    y = np.concatenate((y, y), 0)
+    y.append(y)
     return x, y
 
 
@@ -56,8 +56,8 @@ def create_framestack(x, y, f_int, f_int2):
         X2 = x[ex_num-f_int, :, :, :]
         X3 = x[ex_num-f_int2, :, :, :]
         X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
-        Y_.append(y[ex_num, :])
-    return np.asarray(X_), np.asarray(Y_)
+        Y_.append(y[ex_num])
+    return np.asarray(X_), Y_
 
 
 def feature_scale(x):
@@ -126,7 +126,6 @@ for i in range(epochs):
 
     # load the chosen data file
     X, Y = batch_get(filename, batch_sz)
-    Y = tf.one_hot(Y, num_classes)
 
     # local feature Scaling
     X = feature_scale(X)
@@ -137,6 +136,7 @@ for i in range(epochs):
 
     # Data Augmentation - adding noise
     X, Y = add_noise(X, Y)
+    Y = tf.one_hot(Y, num_classes)
 
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
@@ -148,7 +148,6 @@ for i in range(epochs):
     if i%100 == 0:
         # get validation batch
         tx, ty = batch_get(val_name, 600)
-        ty = tf.one_hot(ty, num_classes)
         
         # feature scale validation data
         tx = feature_scale(tx)
@@ -156,7 +155,10 @@ for i in range(epochs):
         # Create validation framestack
         if num_stack != 1:
             tx, ty = create_framestack(tx, ty, f_int, f_int2)
-        assert(ty.shape[0] == tx.shape[0]),'data and label shapes do not match'
+         
+        ty = tf.one_hot(ty, num_classes)
+        
+        assert(len(ty) == tx.shape[0]),'data and label shapes do not match'
         
         # Get validation accuracy and error rate
         val_acc, val_loss, summary = model.session.run([acc, cost, merged], 
