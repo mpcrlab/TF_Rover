@@ -27,7 +27,7 @@ def DNN1(network, scale=False):
     network = tflearn.dropout(network, drop_prob)
     network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, drop_prob)
-    network = tflearn.fully_connected(network, 3, activation='softmax')
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -49,7 +49,7 @@ def Conv1(network, scale=False):
     network = dropout(network, drop_prob)
     network = fully_connected(network, 256, activation='tanh')
     network = dropout(network, drop_prob)
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -78,7 +78,7 @@ def Alex1(network, scale=False):
     network = dropout(network, drop_prob)
     network = fully_connected(network, 4096, activation='tanh')
     network = dropout(network, drop_prob)
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -119,7 +119,7 @@ def VGG1(network, scale=False):
     network = dropout(network, drop_prob)
     network = fully_connected(network, 4096, activation='relu')
     network = dropout(network, drop_prob)
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -139,7 +139,7 @@ def Highway1(network, scale=False):
     for i in range(10):
         highway = tflearn.highway(highway, 64, activation='elu',regularizer='L2', weight_decay=0.001, transform_dropout=0.7)
 
-    network = tflearn.fully_connected(highway, 3, activation='softmax')
+    network = tflearn.fully_connected(highway, 4, activation='softmax')
     
     return network
 
@@ -161,7 +161,7 @@ def ConvHighway1(network, scale=False):
 
     network = fully_connected(network, 128, activation='elu')
     network = fully_connected(network, 256, activation='elu')
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -190,7 +190,7 @@ def Net_in_Net1(network, scale=False):
     network = conv_2d(network, 10, 1, activation='relu')
     network = avg_pool_2d(network, 8)
     network = flatten(network)
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -215,7 +215,7 @@ def ResNet1(network, scale=False):
     network = activation(network, 'relu')
     network = global_avg_pool(network)
     # Regression
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -242,7 +242,7 @@ def ResNext1(network, scale=False):
     network = activation(network, 'relu')
     network = global_avg_pool(network)
     # Regression
-    network = fully_connected(network, 3, activation='softmax')
+    network = fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -261,7 +261,7 @@ def LSTM1(network, scale=False):
     print(network.shape)
     network = tflearn.lstm(network, 128, return_seq=True)
     network = tflearn.lstm(network, 128)
-    network = tflearn.fully_connected(network, 3, activation='softmax')
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
 
@@ -385,7 +385,7 @@ def GoogLeNet1(network, scale=False):
 
     pool5_7_7 = avg_pool_2d(inception_5b_output, kernel_size=7, strides=1)
     pool5_7_7 = dropout(pool5_7_7, 0.4)
-    network = fully_connected(pool5_7_7, 3,activation='softmax')
+    network = fully_connected(pool5_7_7, 4,activation='softmax')
 
     return network
 
@@ -406,7 +406,7 @@ def DenseNet(network, scale=False):
 
     # Building DenseNet Network
     
-    network = tflearn.conv_2d(network, 10, 3, regularizer='L2', weight_decay=0.0001)
+    network = tflearn.conv_2d(network, 10, 4, regularizer='L2', weight_decay=0.0001)
     network = denseblock(network, nb_layers, k, dropout=drop_prob)
     network = denseblock(network, nb_layers, k, dropout=drop_prob)
     network = denseblock(network, nb_layers, k, dropout=drop_prob)
@@ -447,7 +447,7 @@ def RCNN1(network, scale=False):
 ########################################################
 def lstm2(network):
     network = lstm(network, 10000, dropout=0.7, activation='relu')
-    network = tflearn.fully_connected(network, 3, activation='softmax')
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network 
 
