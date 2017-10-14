@@ -68,10 +68,9 @@ def feature_scale(x):
 def batch_get(filename, batch_size):
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
-    y = np.int32(f['Y']) + 1
-    Y = np.zeros([batch_size, num_classes])
+    Y = np.int32(f['Y']) + 1
     rand = np.random.randint(f_int2, X.shape[0], batch_size)
-    Y[np.arange(batch_size), y[rand]] = 1.0 # create one-hot label vector
+    Y = Y[rand]
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
     f.flush()
@@ -127,6 +126,7 @@ for i in range(epochs):
 
     # load the chosen data file
     X, Y = batch_get(filename, batch_sz)
+    Y = tf.one_hot(Y, num_classes)
 
     # local feature Scaling
     X = feature_scale(X)
@@ -148,6 +148,7 @@ for i in range(epochs):
     if i%100 == 0:
         # get validation batch
         tx, ty = batch_get(val_name, 600)
+        ty = tf.one_hot(ty, num_classes)
         
         # feature scale validation data
         tx = feature_scale(tx)
