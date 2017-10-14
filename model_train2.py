@@ -71,7 +71,7 @@ def batch_get(filename, batch_size):
     y = np.int32(f['Y']) + 1
     print(y.shape)
     rand = np.random.randint(f_int2, X.shape[0], batch_size)
-    Y = np.zeros[batch_size, num_classes])
+    Y = np.zeros([batch_size, num_classes])
     Y[np.arange(batch_size), y[rand]] = 1.0
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
