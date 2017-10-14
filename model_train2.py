@@ -2,7 +2,6 @@
 
 from __future__ import division, print_function, absolute_import
 import numpy as np
-import tensorflow as tf
 import tflearn
 from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.conv import conv_2d, max_pool_2d
@@ -14,15 +13,14 @@ from tflearn.metrics import *
 from tflearn.objectives import categorical_crossentropy
 import glob
 import matplotlib.pyplot as plt
-from tflearn.data_augmentation import ImageAugmentation
-import sys
-import os
+import sys, os
 import cv2
 sys.argv += [0.5]
 from NetworkSwitch import *
 from sklearn.preprocessing import scale
 from scipy.misc import imshow
 
+sys.exit(0)
 
 m_save = 'Felix_3frames5,15_GrayCropped_RightAllDrivers_'
 
