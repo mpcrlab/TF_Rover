@@ -119,14 +119,14 @@ for i in range(epochs):
     n = np.random.randint(1, len(fnames)-1, 1)
     filename = fnames[n[0]]
     
-    sys.exit(0)
-    
     # skip validation set if chosen
     if filename == val_name: 
         continue
 
     # load the chosen data file
     X, Y = batch_get(filename, batch_sz)
+    
+    sys.exit(0)
 
     # local feature Scaling
     X = feature_scale(X)
