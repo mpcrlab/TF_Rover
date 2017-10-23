@@ -13,6 +13,8 @@ num_cols = 320
 num_rows = 130
 drop_prob = sys.argv[1]
 
+def x3(x):
+    return x**3
 
 ########################################################
 def DNN1(network, scale=False):
