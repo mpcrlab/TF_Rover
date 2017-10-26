@@ -502,6 +502,7 @@ modelswitch = {
     11 : DenseNet,
     12 : RCNN1,
     13 : lstm2,
+    14 : X3,
 }
 
 
