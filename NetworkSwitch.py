@@ -454,6 +454,36 @@ def lstm2(network):
     return network 
 
 ########################################################
+def X3(y, iters, batch_sz, num_dict_features=None, D=None):
+    ''' Dynamical systems neural network used for sparse approximation of an
+        input vector.
+        Args: 
+            y: input signal or vector, or multiple column vectors.
+            num_dict_features: number of dictionary patches to learn.
+            iters: number of LCA iterations.
+            batch_sz: number of samples to send to the network at each iteration.
+            D: The dictionary to be used in the network.'''
+  
+    assert(num_dict_features is None or D is None), 'provide D or num_dict_features, not both'
+    
+    if D is None:
+        if batch_sz >= num_dict_features:
+            r = np.random.permutation(y.shape[1])
+            D = y[:, r[:num_dict_features]]
+        else:
+            D=np.random.randn(y.shape[0], num_dict_features)
+
+    for i in range(iters):
+        batch=y[:, np.int32(np.floor(np.random.rand(batch_sz)*y.shape[1]))]
+        D=tf.matmul(D, tf.diag(1/(tf.sqrt(tf.reduce_sum(D**2, 0))+1e-6)))
+        a=tf.matmul(tf.transpose(D), batch)
+        a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
+        a=0.3*a**3
+        D=D+tf.matmul((batch-tf.matmul(D, a)), tf.transpose(a))
+
+    return sess.run(D), sess.run(a)
+
+########################################################
 
 
 
