@@ -25,7 +25,7 @@ m_save = 'Felix_3frames5,15_GrayCropped_RightAllDrivers_'
 
 # prompt the user for which model they want to train from NetworkSwitch.py
 print(modelswitch)
-model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)+1) + ')?'))
+model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)-1) + ')?'))
 
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right2')
