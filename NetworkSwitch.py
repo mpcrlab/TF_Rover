@@ -1,5 +1,6 @@
 import os, sys
 import tflearn
+import tensorflow as tf
 import h5py
 from sklearn.preprocessing import scale
 from tflearn.layers.core import input_data, dropout, fully_connected, flatten
