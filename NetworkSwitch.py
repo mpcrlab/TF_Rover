@@ -15,8 +15,6 @@ num_cols = 320
 num_rows = 130
 drop_prob = sys.argv[1]
 
-def x3(x):
-    return x**3
 
 ########################################################
 def DNN1(network, scale=False):
@@ -468,7 +466,7 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None):
   
     assert(num_dict_features is None or D is None), 'provide D or num_dict_features, not both'
   
-    e = tf.zeros([1, ])
+    e = tf.zeros([1, 1])
     
     if D is None:
         if batch_sz >= num_dict_features:
@@ -483,9 +481,9 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None):
         a=tf.matmul(tf.transpose(D), batch)
         a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
         a=0.3*a**3
-        error = tf.sqrt(tf.reduce_sum((batch - tf.matmul(D, a))**2))
+        error = tf.to_float(tf.sqrt(tf.reduce_sum((batch - tf.matmul(D, a))**2)))
         e = tf.concat([e, tf.ones([1, 1])*error], axis=0)
-        D=D+tf.matmul(error, tf.transpose(a))
+        D=D+tf.matmul(batch - tf.matmul(D, a), tf.transpose(a))
 
     return sess.run(D), sess.run(a), sess.run(e)
 
