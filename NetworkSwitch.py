@@ -465,6 +465,8 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None):
             D: The dictionary to be used in the network.'''
   
     assert(num_dict_features is None or D is None), 'provide D or num_dict_features, not both'
+  
+    e = tf.zeros([1, ])
     
     if D is None:
         if batch_sz >= num_dict_features:
@@ -479,9 +481,11 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None):
         a=tf.matmul(tf.transpose(D), batch)
         a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
         a=0.3*a**3
-        D=D+tf.matmul((batch-tf.matmul(D, a)), tf.transpose(a))
+        error = tf.sqrt(tf.reduce_sum((batch - tf.matmul(D, a))**2))
+        e = tf.concat([e, tf.ones([1, 1])*error], axis=0)
+        D=D+tf.matmul(error, tf.transpose(a))
 
-    return sess.run(D), sess.run(a)
+    return sess.run(D), sess.run(a), sess.run(e)
 
 ########################################################
 
