@@ -15,6 +15,12 @@ num_cols = 320
 num_rows = 130
 drop_prob = sys.argv[1]
 
+def cosine_sim(x, y):
+    a = tf.matmul(tf.transpose(x), y)
+    xnorm = tf.norm(x, 2, axis=0)
+    ynorm = tf.norm(y, 2, axis=0)
+    return tf.divide(a, tf.multiply(xnorm, ynorm))
+
 
 ########################################################
 def DNN1(network, scale=False):
@@ -454,15 +460,19 @@ def lstm2(network):
     return network 
 
 ########################################################
-def X3(y, iters, batch_sz, num_dict_features=None, D=None):
+def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
     ''' Dynamical systems neural network used for sparse approximation of an
         input vector.
+        
         Args: 
             y: input signal or vector, or multiple column vectors.
             num_dict_features: number of dictionary patches to learn.
             iters: number of LCA iterations.
             batch_sz: number of samples to send to the network at each iteration.
-            D: The dictionary to be used in the network.'''
+            D: The dictionary to be used in the network.
+            cos_sim: whether or not to determine similarity between
+                     dictionary and batch with cosine similarity.
+                     If False, a matrix multiplication will be performed instead.'''
   
     assert(num_dict_features is None or D is None), 'provide D or num_dict_features, not both'
     
@@ -477,13 +487,33 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None):
                 D=np.random.randn(y.shape[0], num_dict_features)
 
         for i in range(iters):
-            batch=y[:, np.int32(np.floor(np.random.rand(batch_sz)*y.shape[1]))]
+            
+            # choose random examples this iteration
+            batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
+            
+            # scale the values in the dict to between 0 and 1
             D=tf.matmul(D, tf.diag(1/(tf.sqrt(tf.reduce_sum(D**2, 0))+1e-6)))
-            a=tf.matmul(tf.transpose(D), batch)
+            
+            # get cosine similarity between dict and data batch
+            if cos_sim:
+                a = cosine_sim(D, batch)
+            else:
+                # matrix mult. more desirable in some cases
+                a = tf.matmul(tf.transpose(D), batch)
+                
+            # scale the alpha coefficients (cosine similarity coefficients)
             a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
+            
+            # perform cubic activation on the alphas
             a=0.3*a**3
+            
+            # get the SSE between reconstruction and data batch
             error = tf.to_float(tf.sqrt(tf.reduce_sum((batch - tf.matmul(D, a))**2)))
+            
+            # save the error to plot later
             e = tf.concat([e, tf.ones([1, 1])*error], axis=0)
+            
+            # modify the dictionary to reduce the error
             D=D+tf.matmul(batch - tf.matmul(D, a), tf.transpose(a))
 
     return sess.run(D), sess.run(a), sess.run(e)
