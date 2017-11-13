@@ -27,6 +27,9 @@ m_save = 'Felix_3frames5,15_GrayCropped_RightAllDrivers_'
 print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)-1) + ')?'))
 
+# start tensorboard 
+os.system('tensorboard --logdir=/tmp/tflearn_logs/ &')
+
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right2')
 fnames = glob.glob('*.h5') # datasets to train on
