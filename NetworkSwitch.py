@@ -22,6 +22,10 @@ def cosine_sim(x, y):
     return tf.divide(a, tf.multiply(xnorm, ynorm))
 
 
+def x3(x):
+    return 0.3*x**3
+
+
 ########################################################
 def DNN1(network, scale=False):
     if scale is True:
