@@ -49,15 +49,24 @@ def add_noise(x, y):
     return x, y
 
 
-def create_framestack(x, y, f_int, f_int2):
+
+def create_framestack(x, y, *args):
     X_ = []
     Y_ = []
-    for ex_num in range(x.shape[0]-1, f_int2, -1):
-        X2 = x[ex_num-f_int, :, :, :]
-        X3 = x[ex_num-f_int2, :, :, :]
-        X_.append(np.concatenate((x[ex_num, :, :, :], X2, X3), 2))
+    for ex_num in range(x.shape[0]-1, max(args), -1):
+        xf = np.zeros([0, x.shape[1], x.shape[2], x.shape[3]])
+
+        for past_frame_num in args:
+            xf = np.concatenate((xf,
+                                 x[ex_num, ...]
+                                 x[ex_num-past_frame_num, ...]),
+                                 axis=3)
+
+        X_.append(xf)
         Y_.append(y[ex_num, :])
+        
     return np.asarray(X_), np.asarray(Y_)
+
 
 
 def feature_scale(x):
