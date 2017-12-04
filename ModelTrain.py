@@ -35,8 +35,7 @@ os.chdir('/home/TF_Rover/RoverData/Right2')
 fnames = glob.glob('*.h5') # datasets to train on
 epochs = 20001 # number of training iterations
 batch_sz = 80  # training batch size
-f_int = 5
-f_int2 = 15
+stack_nums = [5, 15]
 num_stack = 3
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
@@ -51,15 +50,16 @@ def add_noise(x, y):
 
 
 def create_framestack(x, y, *args):
+    args.sort()
     X_ = []
     Y_ = []
     
     for ex_num in range(x.shape[0]-1, max(args), -1):
         xf = x[ex_num, ...]
 
-        for past_frame_num in args:
+        for i in len(args):
             xf = np.concatenate((xf,
-                                 x[ex_num-past_frame_num, ...]),
+                                 x[ex_num-args[i], ...]),
                                  axis=2)
 
         X_.append(xf)
@@ -93,7 +93,7 @@ print('Validation Dataset: %s'%(val_name))
 
 # Create input layer and label placeholder for the network
 labels = tf.placeholder(dtype=tf.float32, shape=[None, num_classes])
-network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, num_stack])
+network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, len(args) + 1])
 
 
 # send the input placeholder to the specified network
@@ -142,7 +142,7 @@ for i in range(epochs):
 
     # framestack
     if num_stack != 1:
-        X, Y = create_framestack(X, Y, f_int, f_int2)
+        X, Y = create_framestack(X, Y, stack_nums)
 
     # Data Augmentation - adding noise
     X, Y = add_noise(X, Y)
@@ -163,7 +163,7 @@ for i in range(epochs):
         
         # Create validation framestack
         if num_stack != 1:
-            tx, ty = create_framestack(tx, ty, f_int, f_int2)
+            tx, ty = create_framestack(tx, ty, stack_nums)
         
         assert(ty.shape[0] == tx.shape[0]),'data and label shapes do not match'
         
