@@ -425,12 +425,12 @@ def DenseNet(network, scale=False):
     network = tflearn.global_avg_pool(network)
 
     # Regression
-    network = tflearn.fully_connected(network, 3, activation='softmax')
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
     
 ########################################################
-def RCNN1(network, scale=False):
+def RCNN1(network, prev_activation, scale=False):
     if scale is True:
         network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
         mean, var = tf.nn.moments(network, [0])
@@ -449,12 +449,12 @@ def RCNN1(network, scale=False):
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
     network = fully_connected(network, 2500, activation='tanh')
-    network = dropout(network, 0.5)
-    network = fully_connected(network, 2500, activation='tanh')
-    network = tflearn.lstm(network, 128, dropout=0.7)
-    network = tflearn.fully_connected(network, 3, activation='softmax')
+    network = dropout(network, drop_prob)
+    feat_layer = fully_connected(network, 2500, activation='tanh')
+    network = merge([feat_layer, prev_activation], 'concat', axis=1)
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
-    return network
+    return network, feat_layer
 
 ########################################################
 def lstm2(network):
