@@ -58,7 +58,7 @@ def create_framestack(x, y, *args):
 
         for past_frame_num in args:
             xf = np.concatenate((xf,
-                                 x[ex_num, ...]
+                                 x[ex_num, ...],
                                  x[ex_num-past_frame_num, ...]),
                                  axis=3)
 
