@@ -452,6 +452,7 @@ def RCNN1(network, prev_activation, scale=False):
     network = dropout(network, drop_prob)
     feat_layer = fully_connected(network, 2500, activation='tanh')
     network = merge([feat_layer, prev_activation], 'concat', axis=1)
+    network = lstm(network, 250, dropout=drop_prob, activation='relu')
     network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network, feat_layer
