@@ -430,7 +430,10 @@ def DenseNet(network, scale=False):
     return network
     
 ########################################################
-def RCNN1(network, prev_activation, scale=False):
+def RCNN1(network, prev_activation=None, scale=False):
+    if prev_activation is None:
+        prev_activation = tf.zeros([1, 2500])
+    
     if scale is True:
         network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
         mean, var = tf.nn.moments(network, [0])
