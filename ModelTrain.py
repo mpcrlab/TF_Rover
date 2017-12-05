@@ -60,7 +60,7 @@ def create_framestack(x, y, *args):
     for ex_num in range(x.shape[0]-1, max(args), -1):
         xf = x[ex_num, ...]
 
-        for i in len(args):
+        for i in range(len(args)):
             xf = np.concatenate((xf,
                                  x[ex_num-args[i], ...]),
                                  axis=2)
