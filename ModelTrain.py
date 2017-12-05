@@ -50,6 +50,8 @@ def add_noise(x, y):
 
 
 def create_framestack(x, y, *args):
+    print(args)
+    print(type(args))
     args.sort()
     X_ = []
     Y_ = []
