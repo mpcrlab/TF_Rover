@@ -78,7 +78,7 @@ def batch_get(filename, batch_size):
     f = h5py.File(filename, 'r')
     X = np.asarray(f['X'])
     y = np.int32(f['Y']) + 1
-    rand = np.random.randint(f_int2, X.shape[0], batch_size)
+    rand = np.random.randint(max(stack_nums), X.shape[0], batch_size)
     Y = np.zeros([batch_size, num_classes])
     Y[np.arange(batch_size), y[rand]] = 1.0
     X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
