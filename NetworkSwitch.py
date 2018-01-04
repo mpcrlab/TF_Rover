@@ -210,24 +210,17 @@ def Net_in_Net1(network, scale=False):
 
 ########################################################
 def ResNet1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
-        
-    network = conv_2d(network, 25, 4, activation='relu', bias=False)
-    # Residual blocks
-    network = residual_bottleneck(network, 3, 2, 25)
-    network = residual_bottleneck(network, 1, 2, 29, downsample=True)
-    network = residual_bottleneck(network, 2, 3, 29)
-    network = residual_bottleneck(network, 1, 6, 49, downsample=True)
-    network = residual_bottleneck(network, 2, 6, 49)
-    network = batch_normalization(network)
-    network = activation(network, 'relu')
-    network = global_avg_pool(network)
+    net = tflearn.conv_2d(net, 16, 3, regularizer='L2', weight_decay=0.0001)
+    net = tflearn.residual_block(net, n, 16)
+    net = tflearn.residual_block(net, 1, 32, downsample=True)
+    net = tflearn.residual_block(net, n-1, 32)
+    net = tflearn.residual_block(net, 1, 64, downsample=True)
+    net = tflearn.residual_block(net, n-1, 64)
+    net = tflearn.batch_normalization(net)
+    net = tflearn.activation(net, 'relu')
+    net = tflearn.global_avg_pool(net)
     # Regression
-    network = fully_connected(network, 4, activation='softmax')
+    net = tflearn.fully_connected(net, 4, activation='softmax')
     
     return network
 
