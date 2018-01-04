@@ -210,6 +210,8 @@ def Net_in_Net1(network, scale=False):
 
 ########################################################
 def ResNet1(network, scale=False):
+    n = 5
+    
     network = tflearn.conv_2d(network, 16, 3, regularizer='L2', weight_decay=0.0001)
     network = tflearn.residual_block(network, n, 16)
     network = tflearn.residual_block(network, 1, 32, downsample=True)
