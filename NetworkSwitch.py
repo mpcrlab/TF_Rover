@@ -210,17 +210,17 @@ def Net_in_Net1(network, scale=False):
 
 ########################################################
 def ResNet1(network, scale=False):
-    net = tflearn.conv_2d(net, 16, 3, regularizer='L2', weight_decay=0.0001)
-    net = tflearn.residual_block(net, n, 16)
-    net = tflearn.residual_block(net, 1, 32, downsample=True)
-    net = tflearn.residual_block(net, n-1, 32)
-    net = tflearn.residual_block(net, 1, 64, downsample=True)
-    net = tflearn.residual_block(net, n-1, 64)
-    net = tflearn.batch_normalization(net)
-    net = tflearn.activation(net, 'relu')
-    net = tflearn.global_avg_pool(net)
+    network = tflearn.conv_2d(network, 16, 3, regularizer='L2', weight_decay=0.0001)
+    network = tflearn.residual_block(network, n, 16)
+    network = tflearn.residual_block(network, 1, 32, downsample=True)
+    network = tflearn.residual_block(network, n-1, 32)
+    network = tflearn.residual_block(network, 1, 64, downsample=True)
+    network = tflearn.residual_block(network, n-1, 64)
+    network = tflearn.batch_normalization(network)
+    network = tflearn.activation(network, 'relu')
+    network = tflearn.global_avg_pool(network)
     # Regression
-    net = tflearn.fully_connected(net, 4, activation='softmax')
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
 
