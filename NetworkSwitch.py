@@ -210,17 +210,18 @@ def Net_in_Net1(network, scale=False):
 
 ########################################################
 def ResNet1(network, scale=False):
-    n = 5
+    n = 3
     
-    network = tflearn.conv_2d(network, 16, 3, regularizer='L2', weight_decay=0.0001)
-    network = tflearn.residual_block(network, n, 16)
-    network = tflearn.residual_block(network, 1, 32, downsample=True)
-    network = tflearn.residual_block(network, n-1, 32)
+    network = tflearn.conv_2d(network, 32, 3, regularizer='L2', weight_decay=0.0001)
+    network = tflearn.residual_block(network, n, 32)
     network = tflearn.residual_block(network, 1, 64, downsample=True)
     network = tflearn.residual_block(network, n-1, 64)
-    network = tflearn.batch_normalization(network)
+    network = tflearn.residual_block(network, 1, 128, downsample=True)
+    network = tflearn.residual_block(network, n-1, 128)
     network = tflearn.activation(network, 'relu')
-    network = tflearn.global_avg_pool(network)
+    network = tflearn.batch_normalization(network)
+    network = tflearn.fully_connected(network, 2700, activation='tanh')
+    network = dropout(network, drop_prob)
     # Regression
     network = tflearn.fully_connected(network, 4, activation='softmax')
     
