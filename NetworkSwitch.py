@@ -210,19 +210,31 @@ def Net_in_Net1(network, scale=False):
 
 ########################################################
 def ResNet1(network, scale=False):
-    n = 3
     
-    network = tflearn.conv_2d(network, 32, 3, regularizer='L2', weight_decay=0.0001)
-    network = tflearn.residual_block(network, n, 32)
-    network = tflearn.residual_block(network, 1, 64, downsample=True)
-    network = tflearn.residual_block(network, n-1, 64)
-    network = tflearn.residual_block(network, 1, 128, downsample=True)
-    network = tflearn.residual_block(network, n-1, 128)
-    network = tflearn.activation(network, 'relu')
-    network = tflearn.batch_normalization(network)
-    network = tflearn.fully_connected(network, 2700, activation='tanh')
+    network = tflearn.conv_2d(network, 64, 7, regularizer='L2')
+    network = max_pool_2d(network, 2)
+    
+    network = tflearn.residual_block(network, 2, 64)
+    network = tflearn.residual_block(network, 2, 64)
+    network = tflearn.residual_block(network, 2, 64)
+    network = tflearn.residual_block(network, 2, 128, downsample=True)
+    network = tflearn.residual_block(network, 2, 128)
+    network = tflearn.residual_block(network, 2, 128)
+    network = tflearn.residual_block(network, 2, 128)
+    network = tflearn.residual_block(network, 2, 256, downsample=True)
+    network = tflearn.residual_block(network, 2, 256)
+    network = tflearn.residual_block(network, 2, 256)
+    network = tflearn.residual_block(network, 2, 256)
+    network = tflearn.residual_block(network, 2, 256)
+    network = tflearn.residual_block(network, 2, 256)
+    network = tflearn.residual_block(network, 2, 512, downsample=True)
+    network = tflearn.residual_block(network, 2, 512)
+    network = tflearn.residual_block(network, 2, 512)
+    
+    network = tflearn.fully_connected(network, 500, activation='tanh')
     network = dropout(network, drop_prob)
-    # Regression
+    network = tflearn.fully_connected(network, 500, activation='tanh')
+    network = dropout(network, drop_prob)
     network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
