@@ -230,26 +230,20 @@ def ResNet1(network, scale=False):
 
 ########################################################
 def ResNext1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
-        
-    # Residual blocks
-    # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
-    n = 5
-    network = conv_2d(network, 16, 3, regularizer='L2', weight_decay=0.0001)
-    network = resnext_block(network, n, 16, 32)
-    network = resnext_block(network, 1, 32, 32, downsample=True)
-    network = resnext_block(network, n-1, 32, 32)
-    network = resnext_block(network, 1, 32, 32, downsample=True)
-    network = resnext_block(network, n-1, 32, 32)
-    network = batch_normalization(network)
-    network = activation(network, 'relu')
+    n = 2
+    
+    network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
+    network = max_pool_2d(network, 3, strides=2)
+    
+    network = tflearn.resnext_block(network, n, 32, 32, batch_norm=False)
+    network = tflearn.resnext_block(network, n, 32, 32, batch_norm=False)
+    network = tflearn.resnext_block(network, n, 64, 32, downsample=True, batch_norm=False)
+    network = tflearn.resnext_block(network, n, 64, 32, batch_norm=False)
+    network = tflearn.resnext_block(network, n, 128, 32, batch_norm=False)
+    network = tflearn.resnext_block(network, n, 128, 32, batch_norm=False)
+    
     network = global_avg_pool(network)
-    # Regression
-    network = fully_connected(network, 4, activation='softmax')
+    network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
 
