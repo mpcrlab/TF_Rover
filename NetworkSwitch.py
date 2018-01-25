@@ -515,10 +515,38 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
 
     return sess.run(D), sess.run(a), sess.run(e)
 
-########################################################
-
-
-
+######################################################################
+def ResNet34(network):
+    
+    network = tflearn.conv_2d(network, 64, 7, strides=2, activation='linear')  
+    network = max_pool_2d(network, 3, strides=2)
+    
+    network = tflearn.residual_block(network, 1, 64, activation='relu')
+    network = tflearn.residual_block(network, 1, 64, activation='relu')
+    network = tflearn.residual_block(network, 1, 64, activation='relu')
+    network = tflearn.residual_block(network, 1, 128, activation='relu', downsample=True)
+    network = tflearn.residual_block(network, 1, 128, activation='relu')
+    network = tflearn.residual_block(network, 1, 128, activation='relu')
+    network = tflearn.residual_block(network, 1, 128, activation='relu')
+    network = tflearn.residual_block(network, 1, 256, activation='relu', downsample=True)
+    network = tflearn.residual_block(network, 1, 256, activation='relu')
+    network = tflearn.residual_block(network, 1, 256, activation='relu')
+    network = tflearn.residual_block(network, 1, 256, activation='relu')
+    network = tflearn.residual_block(network, 1, 256, activation='relu')
+    network = tflearn.residual_block(network, 1, 256, activation='relu')
+    network = tflearn.residual_block(network, 1, 512, activation='relu')
+    network = tflearn.residual_block(network, 1, 512, activation='relu')
+    network = tflearn.residual_block(network, 1, 512, activation='relu')
+    
+    print(network)
+    network = global_avg_pool(network)
+    network = tflearn.fully_connected(network, 4, activation='softmax')
+    
+    return network
+    
+    
+    
+    
 modelswitch = {
     0 : DNN1,
     1 : Conv1,
@@ -535,6 +563,7 @@ modelswitch = {
     12 : RCNN1,
     13 : lstm2,
     14 : X3,
+    15: ResNet34,
 }
 
 
