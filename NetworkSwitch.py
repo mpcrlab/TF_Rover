@@ -536,6 +536,25 @@ def ResNet34(network):
     network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
+
+
+
+def ResNeXt34(network):
+    network = tflearn.conv_2d(network, 64, 7, strides=2, activation='relu')  
+    network = max_pool_2d(network, 3, strides=2)
+
+    network = resnext_block2(network, 3, 64, 32, activation='relu')
+    network = resnext_block2(network, 1, 128, 32, activation='relu', downsample=True)
+    network = resnext_block2(network, 3, 128, 32, activation='relu')
+    network = resnext_block2(network, 1, 256, 32, activation='relu', downsample=True)
+    network = resnext_block2(network, 5, 256, 32, activation='relu')
+    network = resnext_block2(network, 1, 512, 32, activation='relu', downsample=True)
+    network = resnext_block2(network, 2, 512, 32, activation='relu')
+    
+    network = global_avg_pool(network)
+    network = tflearn.fully_connected(network, 4, activation='softmax')
+    
+    return network
     
     
     
@@ -557,6 +576,7 @@ modelswitch = {
     13 : lstm2,
     14 : X3,
     15: ResNet34,
+    16: ResNeXt34,
 }
 
 
