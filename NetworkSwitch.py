@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 from sklearn.preprocessing import scale
 from tflearn.layers.core import input_data, dropout, fully_connected, flatten
-from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_2d
+from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_2d, resnext_block2
 from tflearn.layers.normalization import local_response_normalization, batch_normalization
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
