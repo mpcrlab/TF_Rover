@@ -526,7 +526,7 @@ def ResNet34(network):
     network = tflearn.residual_block(network, 3, 128, activation='relu')
     network = tflearn.residual_block(network, 1, 256, activation='relu', downsample=True)
     network = tflearn.residual_block(network, 5, 256, activation='relu')
-    network = tflearn.residual_block(network, 1, 512, activation='relu', downsample=True)
+    network = tflearn.residual_block(network, 1, 512, activation='relu')
     network = tflearn.residual_block(network, 2, 512, activation='relu')
     network = batch_normalization(network)
     network = activation(network, 'relu')
