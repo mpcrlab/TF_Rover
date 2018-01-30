@@ -11,9 +11,7 @@ from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
 from tflearn.layers.conv import densenet_block as denseblock
 
-num_cols = 320
-num_rows = 130
-drop_prob = sys.argv[1]
+
 
 def cosine_sim(x, y):
     a = tf.matmul(tf.transpose(x), y)
@@ -27,40 +25,35 @@ def x3(x):
 
 
 ########################################################
-def DNN1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def DNN1(network):
+    
     network = tflearn.fully_connected(network, 64, activation='tanh',regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, drop_prob)
     network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, drop_prob)
     network = tflearn.fully_connected(network, 64, activation='tanh', regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, drop_prob)
+    
     network = tflearn.fully_connected(network, 4, activation='softmax')
     
     return network
 
 
 ########################################################
-def Conv1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def Conv1(network):
+    
     network = conv_2d(network, 32, 3, activation='relu', regularizer="L2")
     network = max_pool_2d(network, 2)
     network = local_response_normalization(network)
     network = conv_2d(network, 64, 3, activation='relu', regularizer="L2")
     network = max_pool_2d(network, 2)
     network = local_response_normalization(network)
+    
     network = fully_connected(network, 128, activation='tanh')
     network = dropout(network, drop_prob)
     network = fully_connected(network, 256, activation='tanh')
     network = dropout(network, drop_prob)
+    
     network = fully_connected(network, 4, activation='softmax')
     
     return network
@@ -68,12 +61,7 @@ def Conv1(network, scale=False):
 
 
 ########################################################
-def Alex1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def Alex1(network):
         
     network = conv_2d(network, 96, 11, strides=4, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
@@ -86,10 +74,12 @@ def Alex1(network, scale=False):
     network = conv_2d(network, 256, 3, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
+    
     network = fully_connected(network, 4096, activation='tanh')
     network = dropout(network, drop_prob)
     network = fully_connected(network, 4096, activation='tanh')
     network = dropout(network, drop_prob)
+    
     network = fully_connected(network, 4, activation='softmax')
     
     return network
@@ -97,12 +87,7 @@ def Alex1(network, scale=False):
 
 
 ########################################################
-def VGG1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def VGG1(network):
         
     network = conv_2d(network, 45, 3, activation='relu')
     network = conv_2d(network, 45, 3, activation='relu')
@@ -131,6 +116,7 @@ def VGG1(network, scale=False):
     network = dropout(network, drop_prob)
     network = fully_connected(network, 3500, activation='relu')
     network = dropout(network, drop_prob)
+    
     network = fully_connected(network, 4, activation='softmax')
     
     return network
@@ -138,12 +124,7 @@ def VGG1(network, scale=False):
 
 
 ########################################################
-def Highway1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def Highway1(network):
         
     dense1 = tflearn.fully_connected(network, 64, activation='elu', regularizer='L2', weight_decay=0.001)
 
@@ -158,12 +139,7 @@ def Highway1(network, scale=False):
 
 
 ########################################################
-def ConvHighway1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def ConvHighway1(network):
         
     for i in range(3):
         for j in [3, 2, 1]: 
@@ -173,6 +149,7 @@ def ConvHighway1(network, scale=False):
 
     network = fully_connected(network, 128, activation='elu')
     network = fully_connected(network, 256, activation='elu')
+    
     network = fully_connected(network, 4, activation='softmax')
     
     return network
@@ -180,12 +157,7 @@ def ConvHighway1(network, scale=False):
 
 
 ########################################################
-def Net_in_Net1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def Net_in_Net1(network):
         
     network = conv_2d(network, 192, 5, activation='relu')
     network = conv_2d(network, 160, 1, activation='relu')
@@ -200,8 +172,10 @@ def Net_in_Net1(network, scale=False):
     network = conv_2d(network, 192, 3, activation='relu')
     network = conv_2d(network, 192, 1, activation='relu')
     network = conv_2d(network, 10, 1, activation='relu')
+    
     network = avg_pool_2d(network, 8)
     network = flatten(network)
+    
     network = fully_connected(network, 4, activation='softmax')
     
     return network
@@ -209,18 +183,20 @@ def Net_in_Net1(network, scale=False):
 
 
 ########################################################
-def ResNet1(network, scale=False):
-    n = 2
+def ResNet1(network):
+    n = 2 # number of residual blocks per layer
     
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
     network = max_pool_2d(network, 3, strides=2)
 
-    network = tflearn.residual_block(network, n, 32, batch_norm=False, activation='relu')
-    network = tflearn.residual_block(network, n, 32, batch_norm=False, activation='relu')
-    network = tflearn.residual_block(network, n, 64, downsample=True, batch_norm=False, activation='relu')
-    network = tflearn.residual_block(network, n, 64, batch_norm=False, activation='relu')
-    network = tflearn.residual_block(network, n, 128, batch_norm=False, activation='relu')
-    network = tflearn.residual_block(network, n, 128, batch_norm=False, activation='relu')
+    network = tflearn.residual_block(network, n, 32, activation='relu')
+    network = tflearn.residual_block(network, n, 32, activation='relu')
+    network = tflearn.residual_block(network, n, 64, downsample=True, activation='relu')
+    network = tflearn.residual_block(network, n, 64, activation='relu')
+    network = tflearn.residual_block(network, n, 128, activation='relu')
+    network = tflearn.residual_block(network, n, 128, activation='relu')
+    network = batch_normalization(network)
+    network = activation(network, 'relu')
 
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
@@ -229,18 +205,19 @@ def ResNet1(network, scale=False):
 
 
 ########################################################
-def ResNext1(network, scale=False):
-    n = 2
+def ResNext1(network):
+    n = 2 # number of residual blocks per layer
+    c = 32 # cardinality of each residual block
     
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
     network = max_pool_2d(network, 3, strides=2)
     
-    network = tflearn.resnext_block(network, n, 32, 32, batch_norm=False)
-    network = tflearn.resnext_block(network, n, 32, 32, batch_norm=False)
-    network = tflearn.resnext_block(network, n, 64, 32, downsample=True, batch_norm=False)
-    network = tflearn.resnext_block(network, n, 64, 32, batch_norm=False)
-    network = tflearn.resnext_block(network, n, 128, 32, batch_norm=False)
-    network = tflearn.resnext_block(network, n, 128, 32, batch_norm=False)
+    network = tflearn.resnext_block(network, n, 32, c)
+    network = tflearn.resnext_block(network, n, 32, c)
+    network = tflearn.resnext_block(network, n, 64, c, downsample=True)
+    network = tflearn.resnext_block(network, n, 64, c)
+    network = tflearn.resnext_block(network, n, 128, c)
+    network = tflearn.resnext_block(network, n, 128, c)
     
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
@@ -250,15 +227,8 @@ def ResNext1(network, scale=False):
 
 
 ########################################################
-def LSTM1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
-        
-    #network = squeeze(image.rgb_to_grayscale_ten(network),squeeze_dims=3)
-    network = network[..., 0]
+def LSTM1(network):
+    
     print(network.shape)
     network = tflearn.lstm(network, 500, return_seq=True)
     network = tflearn.lstm(network, 500)
@@ -269,12 +239,7 @@ def LSTM1(network, scale=False):
 
 
 ########################################################
-def GoogLeNet1(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def GoogLeNet1(network):
         
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name = 'conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3,strides=2)
@@ -386,17 +351,13 @@ def GoogLeNet1(network, scale=False):
 
     pool5_7_7 = avg_pool_2d(inception_5b_output, kernel_size=7, strides=1)
     pool5_7_7 = dropout(pool5_7_7, 0.4)
+    
     network = fully_connected(pool5_7_7, 4,activation='softmax')
 
     return network
 
 ########################################################
-def DenseNet(network, scale=False):
-    if scale is True:
-        network = tf.transpose(tf.reshape(network, [-1, num_rows*num_cols*num_channels]))
-        mean, var = tf.nn.moments(network, [0])
-        network = tf.transpose((network-mean)/(tf.sqrt(var)+1e-6))
-        network = tf.reshape(network, [-1, num_rows, num_cols, num_channels])
+def DenseNet(network):
         
     # Growth Rate (12, 16, 32, ...)
     k = 3
@@ -541,6 +502,7 @@ def ResNet34(network):
 
 
 
+#######################################################################
 def ResNeXt34(network):
     network = tflearn.conv_2d(network, 64, 7, strides=2, activation='linear')  
     network = max_pool_2d(network, 3, strides=2)
@@ -560,7 +522,9 @@ def ResNeXt34(network):
     
     return network
     
-    
+ #########################################################################
+##########################################################################
+##########################################################################
     
     
 modelswitch = {
