@@ -21,7 +21,7 @@ from sklearn.preprocessing import scale
 from scipy.misc import imshow
 
 
-m_save = 'Felix_3frames5,15_GrayCropped_RightAllDrivers_'
+m_save = 'Sheri_3frames5,15_GrayCropped_RightAllDrivers_'
 
 # prompt the user for which model they want to train from NetworkSwitch.py
 print(modelswitch)
@@ -70,8 +70,9 @@ def create_framestack(x, y, f_args):
 
 
 def feature_scale(x):
-    x = scale(x.reshape([x.shape[0], -1]), 1)
-    return x.reshape([x.shape[0], 130, 320, 1])
+    b, h, w, c = x.shape
+    x = scale(x.reshape([b, -1]), 1)
+    return x.reshape([b, h, w, c])
 
 
 def batch_get(filename, batch_size):
