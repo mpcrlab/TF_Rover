@@ -518,7 +518,9 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
 ######################################################################
 def ResNet34(network):
     
-    network = tflearn.conv_2d(network, 64, 7, strides=2, activation='linear')  
+    network = tflearn.conv_2d(network, 64, 7, 
+                              strides=2, activation='linear',
+                              regularizer='L2')  
     network = max_pool_2d(network, 3, strides=2)
     
     network = tflearn.residual_block(network, 3, 64, activation='relu')
