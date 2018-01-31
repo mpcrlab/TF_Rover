@@ -212,12 +212,12 @@ def ResNext1(network):
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
     network = max_pool_2d(network, 3, strides=2)
     
-    network = tflearn.resnext_block(network, n, 32, c)
-    network = tflearn.resnext_block(network, n, 32, c)
-    network = tflearn.resnext_block(network, n, 64, c, downsample=True)
-    network = tflearn.resnext_block(network, n, 64, c)
-    network = tflearn.resnext_block(network, n, 128, c)
-    network = tflearn.resnext_block(network, n, 128, c)
+    network = resnext_block2(network, n, 32, c)
+    network = resnext_block2(network, n, 32, c)
+    network = resnext_block2(network, n, 64, c, downsample=True)
+    network = resnext_block2(network, n, 64, c)
+    network = resnext_block2(network, n, 128, c)
+    network = resnext_block2(network, n, 128, c)
     
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
