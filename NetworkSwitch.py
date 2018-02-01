@@ -11,7 +11,7 @@ from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
 from tflearn.layers.conv import densenet_block as denseblock
 
-
+drop_prob = sys.argv[0]
 
 def cosine_sim(x, y):
     a = tf.matmul(tf.transpose(x), y)
