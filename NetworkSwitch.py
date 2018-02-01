@@ -209,16 +209,18 @@ def ResNext1(network):
     n = 2 # number of residual blocks per layer
     c = 32 # cardinality of each residual block
     
-    network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
+    network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='linear')  
     network = max_pool_2d(network, 3, strides=2)
-    
+    network = batch_normalization(network)
+    network = activation(network, 'relu')
+
     network = resnext_block2(network, n, 32, c)
     network = resnext_block2(network, n, 32, c)
     network = resnext_block2(network, n, 64, c, downsample=True)
     network = resnext_block2(network, n, 64, c)
     network = resnext_block2(network, n, 128, c)
     network = resnext_block2(network, n, 128, c)
-    
+
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
     
