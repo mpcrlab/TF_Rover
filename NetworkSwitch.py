@@ -183,7 +183,7 @@ def Net_in_Net1(network):
 
 
 ########################################################
-def ResNet1(network):
+def ResNet26(network):
     n = 2 # number of residual blocks per layer
     
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
@@ -205,7 +205,7 @@ def ResNet1(network):
 
 
 ########################################################
-def ResNext1(network):
+def ResNeXt14(network):
     n = 2 # number of residual blocks per layer
     c = 32 # cardinality of each residual block
     
@@ -214,12 +214,12 @@ def ResNext1(network):
     network = batch_normalization(network)
     network = activation(network, 'relu')
 
-    network = resnext_block2(network, n, 32, c)
-    network = resnext_block2(network, n, 32, c)
-    network = resnext_block2(network, n, 64, c, downsample=True)
-    network = resnext_block2(network, n, 64, c)
-    network = resnext_block2(network, n, 128, c)
-    network = resnext_block2(network, n, 128, c)
+    network = resnext_block(network, n, 32, c)
+    network = resnext_block(network, n, 32, c)
+    network = resnext_block(network, n, 64, c, downsample=True)
+    network = resnext_block(network, n, 64, c)
+    network = resnext_block(network, n, 128, c)
+    network = resnext_block(network, n, 128, c)
 
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
@@ -524,7 +524,7 @@ def ResNeXt34(network):
     
     return network
     
- #########################################################################
+##########################################################################
 ##########################################################################
 ##########################################################################
     
@@ -537,8 +537,8 @@ modelswitch = {
     4 : Highway1,
     5 : ConvHighway1,
     6 : Net_in_Net1,
-    7 : ResNet1,
-    8 : ResNext1,
+    7 : ResNet26,
+    8 : ResNeXt14,
     9 : GoogLeNet1,
     10 : LSTM1,
     11 : DenseNet,
