@@ -447,10 +447,8 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
                 D=np.random.randn(y.shape[0], num_dict_features)
 
         for i in range(iters):
-            
             # choose random examples this iteration
             batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
-            
             # scale the values in the dict to between 0 and 1
             D=tf.matmul(D, tf.diag(1/(tf.sqrt(tf.reduce_sum(D**2, 0))+1e-6)))
             
@@ -463,16 +461,12 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
                 
             # scale the alpha coefficients (cosine similarity coefficients)
             a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
-            
             # perform cubic activation on the alphas
             a=0.3*a**3
-            
             # get the SSE between reconstruction and data batch
             error = tf.to_float(tf.sqrt(tf.reduce_sum((batch - tf.matmul(D, a))**2)))
-            
             # save the error to plot later
             e = tf.concat([e, tf.ones([1, 1])*error], axis=0)
-            
             # modify the dictionary to reduce the error
             D=D+tf.matmul(batch - tf.matmul(D, a), tf.transpose(a))
 
