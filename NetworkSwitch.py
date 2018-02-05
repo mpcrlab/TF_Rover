@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 from sklearn.preprocessing import scale
 from tflearn.layers.core import input_data, dropout, fully_connected, flatten
-from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_2d, resnext_block2, resnext_block4
+from tflearn.layers.conv import conv_2d, max_pool_2d, highway_conv_2d, avg_pool_2d, resnext_block5
 from tflearn.layers.normalization import local_response_normalization, batch_normalization
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, resnext_block, merge
@@ -207,7 +207,7 @@ def ResNet26(network):
 ########################################################
 def ResNeXt14(network):
     n = 1 # number of residual blocks per layer
-    c = 32 # cardinality of each residual block
+    c = 16 # cardinality of each residual block
     
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='linear')  
     network = max_pool_2d(network, 3, strides=2)
