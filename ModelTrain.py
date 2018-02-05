@@ -31,7 +31,6 @@ elif '3frames5,15_GrayCropped' in m_save:
     im_method = 1
     num_stack = 3
     channs = 3
-    stack_nums = [5, 15]
 elif '1frame_GrayCropped' in m_save:
     im_method = 2
     num_stack = 1
@@ -51,6 +50,7 @@ epochs = 20001 # number of training iterations
 batch_sz = 80  # training batch size
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
+stack_nums = [5, 15]
 
 
 def add_noise(x, y):
