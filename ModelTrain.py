@@ -23,6 +23,20 @@ from scipy.misc import imshow
 
 m_save = 'Sheri_3frames5,15_GrayCropped_RightAllDrivers_'
 
+if 'Color' in m_save:
+    im_method = 0
+    num_stack = 1
+    channs = 3
+elif '3frames5,15_GrayCropped' in m_save:
+    im_method = 1
+    num_stack = 3
+    channs = 3
+    stack_nums = [5, 15]
+elif '1frame_GrayCropped' in m_save:
+    im_method = 2
+    num_stack = 1
+    channs = 1
+
 # prompt the user for which model they want to train from NetworkSwitch.py
 print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)-1) + ')?'))
@@ -35,8 +49,6 @@ os.chdir('/home/TF_Rover/RoverData/Right2')
 fnames = glob.glob('*.h5') # datasets to train on
 epochs = 20001 # number of training iterations
 batch_sz = 80  # training batch size
-stack_nums = [5, 15]
-num_stack = 3
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
 
@@ -82,7 +94,11 @@ def batch_get(filename, batch_size):
     rand = np.random.randint(max(stack_nums), X.shape[0], batch_size)
     Y = np.zeros([batch_size, num_classes])
     Y[np.arange(batch_size), y[rand]] = 1.0
-    X = np.mean(X[rand, 110:, :, :], 3, keepdims=True) # grayscale and crop frames
+    X = X[rand, 110:, :, :]
+    
+    if im_method in [1, 2]:
+        X = np.mean(X, 3, keepdims=True) # grayscale and crop frames
+        
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
     f.flush()
     f.close()
