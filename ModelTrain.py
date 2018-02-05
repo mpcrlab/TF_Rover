@@ -110,7 +110,7 @@ print('Validation Dataset: %s'%(val_name))
 
 # Create input layer and label placeholder for the network
 labels = tf.placeholder(dtype=tf.float32, shape=[None, num_classes])
-network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, channs)
+network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, channs])
 
 
 # send the input placeholder to the specified network
