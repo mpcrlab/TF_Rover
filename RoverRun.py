@@ -22,7 +22,7 @@ tf.reset_default_graph()
 
 class RoverRun(Rover):
 
-    def __init__(self, framestack=False, film=False):
+    def __init__(self):
         Rover.__init__(self)
         self.d = Data()
         self.userInterface = Pygame_UI()
@@ -34,25 +34,24 @@ class RoverRun(Rover):
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
-        self.stack = framestack 
-	self.film = film
-	if self.film is True:
-	    pygame.camera.init()
-            camlist = pygame.camera.list_cameras()
-	    if camlist:
-	        self.cam = pygame.camera.Camera(camlist[0],(640,480))
-	        self.cam.start()
-
-        if framestack is False:
-	    self.network = input_data(shape=[None, 130, 320, 1])
-        else:
-            self.network = input_data(shape=[None, 130, 320, len(framestack)+1])
-            self.framestack = np.zeros([1, 130, 320, self.FPS])
-	    self.stack.append(0)
-            self.stack.sort()
-
+	
 	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
 	fileName = fileName[0]
+	
+	if '1frame_Color' in fileName:
+	    self.channs = 3
+	    self.im_method = 0
+	elif '3frames' in fileName:
+	    self.channs = 3
+	    self.im_method = 1
+	    self.framestack = np.zeros([1, 130, 320, self.FPS])
+	    self.stack = [0, 5, 15]
+        elif '1frame_Gray' in fileName:
+	    self.channs = 1
+	    self.im_method = 2
+
+	self.network = input_data(shape=[None, 130, 320, self.channs])
+
 	modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-6]
 	self.network = globals()[modelFind](self.network)
 	self.model = tflearn.DNN(self.network)
@@ -61,8 +60,6 @@ class RoverRun(Rover):
 	self.run()
 
 
-    def film_run(self):
-        return pygame.surfarray.array3d(pygame.transform.rotate(self.cam.get_image(), 90))
 		
     def getActiveKey(self):
         key = None
@@ -92,8 +89,6 @@ class RoverRun(Rover):
 
 
 
-
-
     def run(self):
 	
 	start_time = time.time()
@@ -114,19 +109,17 @@ class RoverRun(Rover):
                 self.quit = True
 
 	    s=self.image
+	    
+	    s=s[None,110:,:,:]
 	
-	    if self.film is True:
-	        a = self.film_run()
-	        cv2.imshow('webcam', a)
-	
-	    # grayscale and crop
-	    s=np.mean(s[None,110:,:,:], 3, keepdims=True)
+	    if self.im_method in [1, 2]:
+	        s = np.mean(s, 3, keepdims=True)
 	
             # Local Feature Scaling
 	    s = (s-np.mean(s))/(np.std(s)+1e-6)
             
             # Framestack 
-            if self.stack is not False:
+            if self.im_method == 1:
                 current = s
 		self.framestack = np.concatenate((current, self.framestack[:, :, :, 1:]), 3)
 		s = self.framestack[:, :, :, self.stack]
