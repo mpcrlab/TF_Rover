@@ -51,6 +51,7 @@ batch_sz = 80  # training batch size
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
 stack_nums = [5, 15]
+learn_rate = 8e-6
 
 
 def add_noise(x, y):
@@ -125,7 +126,7 @@ merged = tf.summary.merge_all()
 
 
 # gradient descent optimizer
-opt = tf.train.AdamOptimizer(learning_rate=8e-6)
+opt = tf.train.AdamOptimizer(learning_rate=learn_rate)
 trainop = tflearn.TrainOp(loss=cost,
                          optimizer=opt,
                          metric=None,
