@@ -532,7 +532,7 @@ modelswitch = {
     5 : ConvHighway1,
     6 : Net_in_Net1,
     7 : ResNet26,
-    8 : ResNeXt14,
+    8 : ResNeXt26,
     9 : GoogLeNet1,
     10 : LSTM1,
     11 : DenseNet,
