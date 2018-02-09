@@ -216,10 +216,13 @@ def ResNeXt26(network):
 
     network = resnext_block5(network, n, 32, c)
     network = resnext_block5(network, n, 32, c)
-    network = resnext_block5(network, n, 64, c, downsample=True)
+    network = resnext_block5(network, 1, 64, c, downsample=True)
+    network = resnext_block5(network, 1, 64, c)
     network = resnext_block5(network, n, 64, c)
-    network = resnext_block5(network, n, 128, c, downsample=True)
+    network = resnext_block5(network, 1, 128, c, downsample=True)
+    network = resnext_block5(network, 1, 128, c)
     network = resnext_block5(network, n, 128, c)
+    print(network)
 
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
