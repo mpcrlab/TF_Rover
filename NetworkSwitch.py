@@ -205,9 +205,9 @@ def ResNet26(network):
 
 
 ########################################################
-def ResNeXt26(network):
-    n = 2 # number of residual blocks per layer
-    c = 16 # cardinality of each residual block
+def ResNeXt(network):
+    n = 1 # number of residual blocks per layer
+    c = 8 # cardinality of each residual block
     
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='linear')  
     network = max_pool_2d(network, 3, strides=2)
@@ -218,10 +218,8 @@ def ResNeXt26(network):
     network = resnext_block5(network, n, 32, c)
     network = resnext_block5(network, 1, 64, c, downsample=True)
     network = resnext_block5(network, 1, 64, c)
-    network = resnext_block5(network, n, 64, c)
     network = resnext_block5(network, 1, 128, c, downsample=True)
-    network = resnext_block5(network, 1, 128, c)
-    network = resnext_block5(network, n, 128, c)
+    network = resnext_block5(network, 1, 256, c)
     print(network)
 
     network = global_avg_pool(network)
@@ -535,7 +533,7 @@ modelswitch = {
     5 : ConvHighway1,
     6 : Net_in_Net1,
     7 : ResNet26,
-    8 : ResNeXt26,
+    8 : ResNeXt,
     9 : GoogLeNet1,
     10 : LSTM1,
     11 : DenseNet,
