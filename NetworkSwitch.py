@@ -501,18 +501,21 @@ def ResNet34(network):
 
 #######################################################################
 def ResNeXt34(network):
-    network = tflearn.conv_2d(network, 64, 7, strides=2, activation='linear')  
+    c = 8  #cardinality
+    
+    network = tflearn.conv_2d(network, 32, 7, strides=2, activation='linear')  
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
     network = activation(network, 'relu')
 
-    network = resnext_block2(network, 3, 64, 32, activation='relu')
-    network = resnext_block2(network, 1, 128, 32, activation='relu', downsample=True)
-    network = resnext_block2(network, 3, 128, 32, activation='relu')
-    network = resnext_block2(network, 1, 256, 32, activation='relu', downsample=True)
-    network = resnext_block2(network, 5, 256, 32, activation='relu')
-    network = resnext_block2(network, 1, 512, 32, activation='relu', downsample=True)
-    network = resnext_block2(network, 2, 512, 32, activation='relu')
+    network = resnext_block5(network, 3, 32, c)
+    network = resnext_block5(network, 1, 64, c, downsample=True)
+    network = resnext_block5(network, 3, 64, c)
+    network = resnext_block5(network, 1, 128, c, downsample=True)
+    network = resnext_block5(network, 5, 128, c)
+    network = resnext_block5(network, 1, 256, c, downsample=True)
+    network = resnext_block5(network, 2, 256, c)
+
     
     network = global_avg_pool(network)
     network = tflearn.fully_connected(network, 4, activation='softmax')
