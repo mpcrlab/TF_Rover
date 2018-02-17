@@ -22,6 +22,7 @@ from scipy.misc import imshow
 
 
 m_save = 'Sheri_3frames5,15_GrayCropped_RightAllDrivers_'
+pt = False
 
 if 'Color' in m_save:
     im_method = 0
@@ -40,16 +41,16 @@ elif '1frame_GrayCropped' in m_save:
 print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)-1) + ')?'))
 
-
 # load a pretrained model
 ans = raw_input('Do you want to use a pre-trained model? (y/n) ')
 if ans in ['Y', 'y']:
+    pt = True
     fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
     fileName = fileName[0]
     network = input_data(shape=[None, 130, 320, channs])
     modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-6]
     assert(modelFind == modelswitch[model_num].__name__), 'different models'
-    network = globals()[modelFind](network)
+    net_out = globals()[modelFind](network)
     model = tflearn.DNN(network)
     model.load(fileName[:-6], weights_only=True)
 
@@ -125,11 +126,13 @@ print('Validation Dataset: %s'%(val_name))
 
 # Create input layer and label placeholder for the network
 labels = tf.placeholder(dtype=tf.float32, shape=[None, num_classes])
-network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, channs])
+
+if not pt:
+    network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, channs])
+    net_out = modelswitch[model_num](network)
 
 
 # send the input placeholder to the specified network
-net_out = modelswitch[model_num](network)
 acc = tf.reduce_mean(tf.to_float(tf.equal(tf.argmax(net_out, 1), tf.argmax(labels, 1))))
 cost = categorical_crossentropy(net_out, labels) # crossentropy loss function
 
