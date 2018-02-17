@@ -40,6 +40,20 @@ elif '1frame_GrayCropped' in m_save:
 print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)-1) + ')?'))
 
+
+# load a pretrained model
+ans = raw_input('Do you want to use a pre-trained model? (y/n) ')
+if ans in ['Y', 'y']:
+    fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
+    fileName = fileName[0]
+    network = input_data(shape=[None, 130, 320, channs])
+    modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-6]
+    assert(modelFind == modelswitch[model_num].__name__), 'different models'
+    network = globals()[modelFind](network)
+    model = tflearn.DNN(network)
+    model.load(fileName[:-6], weights_only=True)
+
+
 # start tensorboard 
 os.system('tensorboard --logdir=/tmp/tflearn_logs/ &')
 
