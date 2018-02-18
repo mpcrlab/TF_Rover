@@ -22,7 +22,7 @@ tf.reset_default_graph()
 
 class RoverRun(Rover):
 
-    def __init__(self):
+    def __init__(self, learn=False):
         Rover.__init__(self)
         self.d = Data()
         self.userInterface = Pygame_UI()
@@ -33,6 +33,7 @@ class RoverRun(Rover):
         self.paused = False
         self.angle = 0
         self.treads = [0,0]
+	self.learn = learn
         self.timeStart = time.time()
 	
 	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
@@ -49,6 +50,10 @@ class RoverRun(Rover):
         elif '1frame_Gray' in fileName:
 	    self.channs = 1
 	    self.im_method = 2
+		
+	if self.learn:
+	    self.n_data = np.zeros([3000, 130, 320, 3])
+	    self.n_labels = np.zeros([3000, 1])
 
 	self.network = input_data(shape=[None, 130, 320, self.channs])
 
@@ -99,7 +104,7 @@ class RoverRun(Rover):
 
         while not self.quit:
             
-
+	    i = 0
             
        	    key = self.getActiveKey()
             if key:
@@ -109,6 +114,8 @@ class RoverRun(Rover):
                 self.quit = True
 
 	    s=self.image
+	
+	    self.n_data[i, ...] = s
 	    
 	    s=s[None,110:,:,:]
 	
@@ -125,8 +132,9 @@ class RoverRun(Rover):
 		s = self.framestack[:, :, :, self.stack]
 	    
 	    # predict the correct steering angle from input
-            self.angle = self.model.predict(s)
-	    self.angle = np.argmax(self.angle)
+            self.angle = np.argmax(self.model.predict(s))
+	    #self.angle = np.argmax(self.angle)
+	    self.n_labels[i, ...] = self.angle - 1
 	    
 	    os.system('clear')
 	    print(self.angle)
@@ -154,11 +162,21 @@ class RoverRun(Rover):
             self.clock.tick(self.FPS)
             pygame.display.flip()
             self.userInterface.screen.fill((255,255,255))
-
+	
+	    i += 1
+	    
+	    if i == self.n_labels.shape[0] - 1:
+		self.quit == True
+	
 	elapsed_time = np.round(time.time() - start_time, 2)
 	print('This run lasted %.2f seconds'%(elapsed_time))
 	
         self.set_wheel_treads(0,0)
+	
+	nfile = h5py.File('New_Data' + str(time.time()) + '.h5', 'a')
+	nfile.create_dataset('X', data=self.n_data)
+	nfile.create_dataset('Y', data=self.n_labels)
+	nfile.close()
         
         pygame.quit()
         cv2.destroyAllWindows()
