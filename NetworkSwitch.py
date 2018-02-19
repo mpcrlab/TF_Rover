@@ -206,20 +206,17 @@ def ResNet26(network):
 
 ########################################################
 def ResNeXt(network):
-    n = 1 # number of residual blocks per layer
-    c = 8 # cardinality of each residual block
+    c = 32 # cardinality of each residual block
     
-    network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='linear')  
+    network = tflearn.conv_2d(network, 64, 7, regularizer='L2', strides=2, activation='linear')  
     network = max_pool_2d(network, 3, strides=2)
     network = batch_normalization(network)
     network = activation(network, 'relu')
 
-    network = resnext_block5(network, n, 32, c)
-    network = resnext_block5(network, n, 32, c)
-    network = resnext_block5(network, 1, 64, c, downsample=True)
-    network = resnext_block5(network, 1, 64, c)
-    network = resnext_block5(network, 1, 128, c, downsample=True)
-    network = resnext_block5(network, 1, 256, c)
+    network = resnext_block0(network, 2, 128, c, downsample=True)
+    network = resnext_block0(network, 2, 256, c, downsample=True)
+    network = resnext_block0(network, 2, 512, c, downsample=True)
+    network = resnext_block0(network, 2, 1024, c)
     print(network)
 
     network = global_avg_pool(network)
