@@ -27,4 +27,4 @@ def grouped_conv_2d(incoming, groups, filter_size, strides=1,
             inference = tflearn.layers.merge_ops.merge([inference, group_conv],
                                                        'concat', 3)
             
-return inference
+    return inference
