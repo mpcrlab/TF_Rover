@@ -24,6 +24,22 @@ def x3(x):
     return 0.3*x**3
 
 
+def whiten(X):
+    '''Function to ZCA whiten image matrix.'''
+    
+    sigma = np.cov(X, rowvar=True) # [M x M]
+    # Singular Value Decomposition. X = U * np.diag(S) * V
+    U,S,V = np.linalg.svd(sigma)
+        # U: [M x M] eigenvectors of sigma.
+        # S: [M x 1] eigenvalues of sigma.
+        # V: [M x M] transpose of U
+    # Whitening constant: prevents division by zero
+    epsilon = 1e-5
+    # ZCA Whitening matrix: U * Lambda * U'
+    ZCAMatrix = np.dot(U, np.dot(np.diag(1.0/np.sqrt(S + epsilon)), U.T)) # [M x M]
+    return np.dot(ZCAMatrix, X)
+
+
 ########################################################
 def DNN1(network):
     
@@ -418,7 +434,7 @@ def lstm2(network):
     return network 
 
 ########################################################
-def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
+def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=False, white=False):
     ''' Dynamical systems neural network used for sparse approximation of an
         input vector.
         
@@ -447,6 +463,9 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=True):
         for i in range(iters):
             # choose random examples this iteration
             batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
+            
+            if white:
+                batch = whiten(batch)
             # scale the values in the dict to between 0 and 1
             D=tf.matmul(D, tf.diag(1/(tf.sqrt(tf.reduce_sum(D**2, 0))+1e-6)))
             
