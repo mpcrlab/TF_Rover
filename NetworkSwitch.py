@@ -463,6 +463,7 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=False, white=
         for i in range(iters):
             # choose random examples this iteration
             batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
+            batch = scale(batch, 1)
             
             if white:
                 batch = whiten(batch)
