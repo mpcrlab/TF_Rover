@@ -434,7 +434,7 @@ def lstm2(network):
     return network 
 
 ########################################################
-def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=False, white=False):
+def X3(y, iters, batch_sz, num_dict_features=None, D=None, white=False):
     ''' Dynamical systems neural network used for sparse approximation of an
         input vector.
         
@@ -467,16 +467,11 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, cos_sim=False, white=
             
             if white:
                 batch = whiten(batch)
+                
             # scale the values in the dict to between 0 and 1
             D=tf.matmul(D, tf.diag(1/(tf.sqrt(tf.reduce_sum(D**2, 0))+1e-6)))
-            
             # get cosine similarity between dict and data batch
-            if cos_sim:
-                a = cosine_sim(D, batch)
-            else:
-                # matrix mult. more desirable in some cases
-                a = tf.matmul(tf.transpose(D), batch)
-                
+            a = tf.matmul(tf.transpose(D), batch)
             # scale the alpha coefficients (cosine similarity coefficients)
             a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
             # perform cubic activation on the alphas
