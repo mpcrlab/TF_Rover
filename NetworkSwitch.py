@@ -471,7 +471,7 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, white=False):
         # scale the alpha coefficients (cosine similarity coefficients)
         a=np.matmul(a, np.diag(1/(np.sqrt(np.sum(a**2, 0))+1e-6)))
         # perform cubic activation on the alphas
-        a=0.1*a**3
+        a=0.5*a**3
         # get the SSE between reconstruction and data batch
         error = batch - np.matmul(D, a)
         # save the error to plot later
