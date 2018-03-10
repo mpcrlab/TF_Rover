@@ -443,47 +443,43 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, white=False):
             num_dict_features: number of dictionary patches to learn.
             iters: number of LCA iterations.
             batch_sz: number of samples to send to the network at each iteration.
-            D: The dictionary to be used in the network.
-            cos_sim: whether or not to determine similarity between
-                     dictionary and batch with cosine similarity.
-                     If False, a matrix multiplication will be performed instead.'''
+            D: The dictionary to be used in the network.'''
   
     assert(num_dict_features is None or D is None), 'provide D or num_dict_features, not both'
     
-    with tf.Session() as sess:
-        e = tf.zeros([1, 1])
+    e = np.zeros([iters, 1])
     
-        if D is None:
-            if y.shape[1] >= num_dict_features:
-                r = np.random.permutation(y.shape[1])
-                D = y[:, r[:num_dict_features]]
-            else:
-                D=np.random.randn(y.shape[0], num_dict_features)
+    if D is None:
+        if y.shape[1] >= num_dict_features:
+            r = np.random.permutation(y.shape[1])
+            D = y[:, r[:num_dict_features]]
+        else:
+            D=np.random.randn(y.shape[0], num_dict_features)
 
-        for i in range(iters):
-            # choose random examples this iteration
-            batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
-            batch = scale(batch, 1)
+    for i in range(iters):
+        # choose random examples this iteration
+        batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
+        batch = scale(batch, 1)
             
-            if white:
-                batch = whiten(batch)
-                
-            # scale the values in the dict to between 0 and 1
-            D=tf.matmul(D, tf.diag(1/(tf.sqrt(tf.reduce_sum(D**2, 0))+1e-6)))
-            # get cosine similarity between dict and data batch
-            a = tf.matmul(tf.transpose(D), batch)
-            # scale the alpha coefficients (cosine similarity coefficients)
-            a=tf.matmul(a, tf.diag(1/(tf.sqrt(tf.reduce_sum(a**2, 0))+1e-6)))
-            # perform cubic activation on the alphas
-            a=0.3*a**3
-            # get the SSE between reconstruction and data batch
-            error = tf.to_float(tf.sqrt(tf.reduce_sum((batch - tf.matmul(D, a))**2)))
-            # save the error to plot later
-            e = tf.concat([e, tf.ones([1, 1])*error], axis=0)
-            # modify the dictionary to reduce the error
-            D=D+tf.matmul(batch - tf.matmul(D, a), tf.transpose(a))
+        if white:
+            batch = whiten(batch)
 
-    return sess.run(D), sess.run(a), sess.run(e)
+        # scale the values in the dict to between 0 and 1
+        D=np.matmul(D, np.diag(1/(np.sqrt(np.sum(D**2, 0))+1e-6)))
+        # get similarity between each feature and each data patch
+        a = np.matmul(D.transpose(), batch)
+        # scale the alpha coefficients (cosine similarity coefficients)
+        a=np.matmul(a, np.diag(1/(np.sqrt(np.sum(a**2, 0))+1e-6)))
+        # perform cubic activation on the alphas
+        a=0.1*a**3
+        # get the SSE between reconstruction and data batch
+        error = batch - np.matmul(D, a)
+        # save the error to plot later
+        e[i, 0] = np.mean(error**2)
+        # modify the dictionary to reduce the error
+        D=D+np.matmul(error, a.transpose())
+
+    return D, a, e
 
 ######################################################################
 def ResNet34(network):
