@@ -58,8 +58,8 @@ for key in var_to_shape_map:
     print("tensor_name: ", key)
     weights = reader.get_tensor(key)
     shp = weights.shape
-
-    if len(shp) == 4:
+    print(shp)
+    if 'Conv2D/W' in key and len(shp) == 4:
         for i in range(shp[-1]):
             weights = weights.reshape([shp[0]*shp[1], -1])
             plot(weights)
