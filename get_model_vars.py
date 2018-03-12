@@ -5,7 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from scipy.misc import bytescale, imresize
-
+import glob
+import os, sys
 
 
 def montage(X):
@@ -49,9 +50,19 @@ def plot(x, name, color=True):
 
 
 parser = argparse.ArgumentParser(description='model to load')
-parser.add_argument('file_path', type=str)
+parser.add_argument('model_name', type=str)
+parser.add_argument('view_mode', type=str, default='view_weights')
 args = parser.parse_args()
-f = args.file_path
+f = args.model_name
+mod = args.view_mode
+print(mod)
+
+os.chdir('/home/TF_Rover/RoverData')
+fnames = glob.glob('*.index')
+for fil in fnames:
+    if f in fil:
+        f = fil[:-6]
+
 
 reader = pywrap_tensorflow.NewCheckpointReader(f)
 var_to_shape_map = reader.get_variable_to_shape_map()
