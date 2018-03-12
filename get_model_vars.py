@@ -14,11 +14,14 @@ def montage(X):
     if X.shape[2] == 3:
         n = np.sqrt(X.shape[-1])
         out = np.zeros([int(np.ceil(ps*n)), int(np.ceil(ps*n)), 3])
-        n = int(n)
+        n = int(np.ceil(n))
         
         for i in range(n):
             for j in range(n):
-                out[i*ps:i*ps+ps, j*ps:j*ps+ps, :] = X[..., i*n+j]
+                if (i * n + j) < X.shape[-1]:
+                    out[i*ps:i*ps+ps, j*ps:j*ps+ps, :] = X[..., i*n+j]
+                else:
+                     break
 
     else:
         out = np.zeros([ps*X.shape[2], ps*X.shape[3]])
@@ -57,6 +60,7 @@ for key in var_to_shape_map:
     weights = reader.get_tensor(key)
     shp = weights.shape
     print(shp)
+    print(key)
 
     if 'Conv2D' in key and len(shp) == 4 and 'W/' not in key:
         if 'Color' in f and key == 'Conv2D/W':
