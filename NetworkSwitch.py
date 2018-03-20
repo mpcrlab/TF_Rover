@@ -434,7 +434,7 @@ def lstm2(network):
     return network 
 
 ########################################################
-def X3(y, iters, batch_sz, num_dict_features=None, D=None, white=False):
+def X3(y, iters, batch_sz, num_dict_features=None, D=None, white=False, scale=False):
     ''' Dynamical systems neural network used for sparse approximation of an
         input vector.
         
@@ -459,8 +459,9 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None, white=False):
     for i in range(iters):
         # choose random examples this iteration
         batch=y[:, np.random.randint(0, y.shape[1], batch_sz)]
-        batch = scale(batch, 1)
-            
+        
+        if scale:
+            batch = scale(batch, 1)
         if white:
             batch = whiten(batch)
 
