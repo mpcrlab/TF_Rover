@@ -448,13 +448,7 @@ def X3(y, iters, batch_sz, num_dict_features=None, D=None):
     assert(num_dict_features is None or D is None), 'provide D or num_dict_features, not both'
     
     e = np.zeros([iters, 1])
-    
-    if D is None:
-        if y.shape[1] >= num_dict_features:
-            r = np.random.permutation(y.shape[1])
-            D = y[:, r[:num_dict_features]]
-        else:
-            D=np.random.randn(y.shape[0], num_dict_features)
+    D=np.random.randn(y.shape[0], num_dict_features)
 
     for i in range(iters):
         # choose random examples this iteration
