@@ -15,14 +15,46 @@ import glob
 import matplotlib.pyplot as plt
 import sys, os
 import cv2
-sys.argv += [0.5]
 from NetworkSwitch import *
 from sklearn.preprocessing import scale
 from scipy.misc import imshow
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--model_name',
+    type=str,
+    required=True,
+    help='What to save the model under')
+parser.add_argument(
+    '--use_pretrained',
+    type=str,
+    default='n',
+    help='Do you want to use a pretrained model?')
+parser.add_argument(
+    '--dropout_prob',
+    type=float,
+    required=False,
+    default=0.5,
+    help='What dropout probability to use if needed')
+parser.add_argument(
+    '--training_iters',
+    type=int,
+    default=10000,
+    help='How many iterations of gradient descent to do')
 
-m_save = 'Sheri_3frames5,15_GrayCropped_RightAllDrivers_'
-pt = False
+args = parser.parse_args()
+m_save = args.model_name
+pt = args.use_pretrained
+dropout_keep_prob = args.dropout_prob
+training_iterations=args.training_iters
+
+if pt == 'n':
+    pt = False
+elif pt in ['y', 'Y']:
+    pt = True
+#m_save = 'Sheri_3frames5,15_GrayCropped_RightAllDrivers_'
+#pt = False
 
 if 'Color' in m_save:
     im_method = 0
@@ -42,9 +74,7 @@ print(modelswitch)
 model_num = np.int32(raw_input('Which model do you want to train (0 - ' + str(len(modelswitch)-1) + ')?'))
 
 # load a pretrained model
-ans = raw_input('Do you want to use a pre-trained model? (y/n) ')
-if ans in ['Y', 'y']:
-    pt = True
+if pt:
     fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
     fileName = fileName[0]
     network = input_data(shape=[None, 130, 320, channs])
@@ -52,7 +82,7 @@ if ans in ['Y', 'y']:
     assert(modelFind == modelswitch[model_num].__name__), 'different models'
     net_out = globals()[modelFind](network)
     model = tflearn.DNN(network)
-    model.load(fileName[:-6], weights_only=True)
+    model.load(fileName[:-6])
 
 
 # start tensorboard 
@@ -61,20 +91,11 @@ os.system('tensorboard --logdir=/tmp/tflearn_logs/ &')
 # define useful variables
 os.chdir('/home/TF_Rover/RoverData/Right2')
 fnames = glob.glob('*.h5') # datasets to train on
-epochs = 20001 # number of training iterations
-batch_sz = 80  # training batch size
+batch_sz = 150  # training batch size
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
 num_classes = 4
 stack_nums = [5, 15]
-learn_rate = 8e-6
-
-
-def add_noise(x, y):
-    x_aug = x + np.random.randn(x.shape[0], x.shape[1], x.shape[2], x.shape[3])
-    x = np.concatenate((x, x_aug), 0)
-    y = np.concatenate((y, y), 0)
-    return x, y
-
+learn_rate = 3e-5
 
 
 def create_framestack(x, y, f_args):
@@ -96,6 +117,17 @@ def create_framestack(x, y, f_args):
     return np.asarray(X_), np.asarray(Y_)
 
 
+def random_crop(x, padlen=15):
+    h, w = x.shape[1], x.shape[2]
+    X = np.zeros(x.shape)
+    x = np.pad(x, ((0,0),(padlen, padlen),(padlen,padlen),(0,0)), 'constant')
+    
+    for i in range(x.shape[0]):
+        h_ind, w_ind = np.random.randint(0, padlen*2, 2)
+        X[i,...] = x[i,h_ind:h_ind+h, w_ind:w_ind+w, :]
+
+    return X
+
 
 def feature_scale(x):
     b, h, w, c = x.shape
@@ -103,22 +135,27 @@ def feature_scale(x):
     return x.reshape([b, h, w, c])
 
 
-def batch_get(filename, batch_size):
+def batch_get(filename, batch_size, channs, num_classes):
     f = h5py.File(filename, 'r')
-    X = np.asarray(f['X'])
-    y = np.int32(f['Y']) + 1
+    X = f['X']
+    Y = f['Y']
+
+    x = np.zeros([batch_size, 130, 320, channs])
+    y = np.zeros([batch_size, num_classes])
     rand = np.random.randint(max(stack_nums), X.shape[0], batch_size)
-    Y = np.zeros([batch_size, num_classes])
-    Y[np.arange(batch_size), y[rand]] = 1.0
-    X = X[rand, 110:, :, :]
+    count = 0
+    for r in rand:
+        x[count,...] = X[r, 110:, ...]
+        y[count, int(Y[r] + 1.0)] = 1.0
+        count += 1
     
-    if im_method in [1, 2]:
+    if channs == 1:
         X = np.mean(X, 3, keepdims=True) # grayscale and crop frames
         
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
     f.flush()
     f.close()
-    return X, Y
+    return x, y
 
 
 # Validation set
@@ -129,7 +166,7 @@ labels = tf.placeholder(dtype=tf.float32, shape=[None, num_classes])
 
 if not pt:
     network = tf.placeholder(dtype=tf.float32, shape=[None, 130, 320, channs])
-    net_out = modelswitch[model_num](network)
+    net_out = modelswitch[model_num](network, dropout_keep_prob)
 
 
 # send the input placeholder to the specified network
@@ -159,7 +196,7 @@ writer2 = tf.summary.FileWriter('/tmp/tflearn_logs/train'+m_save+modelswitch[mod
 
 ################################## Main Loop #######################################
 
-for i in range(epochs):
+for i in range(training_iterations):
     
     # pick random dataset for this epoch
     n = np.random.randint(1, len(fnames)-1, 1)
@@ -170,7 +207,7 @@ for i in range(epochs):
         continue
 
     # load the chosen data file
-    X, Y = batch_get(filename, batch_sz)
+    X, Y = batch_get(filename, batch_sz, channs, num_classes)
 
     # local feature Scaling
     X = feature_scale(X)
@@ -179,8 +216,8 @@ for i in range(epochs):
     if num_stack != 1:
         X, Y = create_framestack(X, Y, stack_nums)
 
-    # Data Augmentation - adding noise
-    X, Y = add_noise(X, Y)
+    # random crop for augmentation
+    X = random_crop(X)
 
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
@@ -191,7 +228,7 @@ for i in range(epochs):
           
     if i%100 == 0:
         # get validation batch
-        tx, ty = batch_get(val_name, 600)
+        tx, ty = batch_get(val_name, 600, channs, num_classes)
         
         # feature scale validation data
         tx = feature_scale(tx)
