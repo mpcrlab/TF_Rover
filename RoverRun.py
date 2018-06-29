@@ -14,7 +14,6 @@ import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 import scipy.misc
-sys.argv += [1.0]
 from NetworkSwitch import *
 import tensorflow as tf
 tf.reset_default_graph()
@@ -22,7 +21,7 @@ tf.reset_default_graph()
 
 class RoverRun(Rover):
 
-    def __init__(self, learn=False):
+    def __init__(self, filename):
         Rover.__init__(self)
         self.d = Data()
         self.userInterface = Pygame_UI()
@@ -33,11 +32,10 @@ class RoverRun(Rover):
         self.paused = False
         self.angle = 0
         self.treads = [0,0]
-	self.learn = learn
         self.timeStart = time.time()
-	
-	fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
-	fileName = fileName[0]
+	self.filename = filename	
+        #fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
+	#fileName = fileName[0]
 	
 	if '1frame_Color' in fileName:
 	    self.channs = 3
@@ -50,18 +48,13 @@ class RoverRun(Rover):
         elif '1frame_Gray' in fileName:
 	    self.channs = 1
 	    self.im_method = 2
-		
-	if self.learn:
-	    self.n_data = np.zeros([3000, 130, 320, 3])
-	    self.n_labels = np.zeros([3000, 1])
 
 	self.network = input_data(shape=[None, 130, 320, self.channs])
 
-	modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-6]
-	self.network = globals()[modelFind](self.network)
+	modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-5]
+	self.network = globals()[modelFind](self.network, drop_prob=1.0)
 	self.model = tflearn.DNN(self.network)
-	self.model.load(fileName[:-6],
-		       weights_only=True)
+	self.model.load(fileName[:-6])
 	self.run()
 
 
@@ -112,12 +105,8 @@ class RoverRun(Rover):
             if key == 'z':
                 self.quit = True
 
-	    s=self.image
-	    
-	    if self.learn:
-	        self.n_data[i, ...] = s
-	    
-	    s=s[None,110:,:,:]
+	    s = self.image
+	    s = s[None,110:,:,:]
 	
 	    if self.im_method in [1, 2]:
 	        s = np.mean(s, 3, keepdims=True)
@@ -134,26 +123,17 @@ class RoverRun(Rover):
 	    # predict the correct steering angle from input
             self.angle = np.argmax(self.model.predict(s))
 	    #self.angle = np.argmax(self.angle)
-		
-	    if self.learn:
-	        self.n_labels[i, ...] = self.angle - 1
-		i += 1
-		
-		if i == self.n_labels.shape[0] - 1:
-		    self.quit == True
 	    
 	    os.system('clear')
-	    print(self.angle)
-            print(self.image.shape)	
 
 	    speed=.5
 
             if self.angle == 0:
-                self.treads = [-(speed - 0.07),speed - 0.07]
+                self.treads = [-speed, speed]
             elif self.angle == 1:
                self.treads = [speed, speed]
             elif self.angle == 2:
-               self.treads = [speed - 0.07,-(speed - 0.07)]
+               self.treads = [speed, -speed]
 	    elif self.angle == 3:
 		self.treads = [-speed, -speed]
 
@@ -173,12 +153,6 @@ class RoverRun(Rover):
 	print('This run lasted %.2f seconds'%(elapsed_time))
 	
         self.set_wheel_treads(0,0)
-	
-	if self.learn:
-	    nfile = h5py.File('New_Data' + str(time.time()) + '.h5', 'a')
-	    nfile.create_dataset('X', data=self.n_data)
-	    nfile.create_dataset('Y', data=self.n_labels)
-	    nfile.close()
         
         pygame.quit()
         cv2.destroyAllWindows()
