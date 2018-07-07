@@ -44,7 +44,7 @@ parser.add_argument(
     help='How many iterations of gradient descent to do')
 
 args = parser.parse_args()
-m_save = args.model_name
+m_save = args.model_name + '_'
 pt = args.use_pretrained
 dropout_keep_prob = args.dropout_prob
 training_iterations=args.training_iters
