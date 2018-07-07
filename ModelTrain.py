@@ -122,7 +122,7 @@ def random_crop(x, padlen=25):
     
     for i in range(x.shape[0]):
         h_ind, w_ind = np.random.randint(0, padlen, 2)
-        im = imresize(x[i,...], [h+padlen//2, w+padlen//2])
+        im = imresize(x[i,...], [h+padlen, w+padlen])
         x[i,...] = im[h_ind:h_ind+h, w_ind:w_ind+w, :]
 
     return x
@@ -216,7 +216,7 @@ for i in range(training_iterations):
         X, Y = create_framestack(X, Y, stack_nums)
 
     # random crop for augmentation
-    X = random_crop(X, 25)
+    X = random_crop(X, 26)
 
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
