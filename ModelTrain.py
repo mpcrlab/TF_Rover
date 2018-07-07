@@ -17,7 +17,7 @@ import sys, os
 import cv2
 from NetworkSwitch import *
 from sklearn.preprocessing import scale
-from scipy.misc import imshow
+from scipy.misc import imshow, imresize
 import argparse
 
 parser = argparse.ArgumentParser()
