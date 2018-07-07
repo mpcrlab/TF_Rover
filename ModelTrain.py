@@ -117,15 +117,20 @@ def create_framestack(x, y, f_args):
     return np.asarray(X_), np.asarray(Y_)
 
 
-def random_crop(x, padlen=16):
+def random_crop(x, padlen=30):
     h, w = x.shape[1], x.shape[2]
+    X = np.zeros(x.shape)
+    x = np.pad(x, 
+              ((0,0), 
+              (padlen//2,padlen//2), 
+              (padlen//2,padlen//2), 
+              (0,0)), 'constant')
     
     for i in range(x.shape[0]):
         h_ind, w_ind = np.random.randint(0, padlen, 2)
-        im = imresize(x[i,...], [h+padlen, w+padlen])
-        x[i,...] = im[h_ind:h_ind+h, w_ind:w_ind+w, :]
+        X[i,...] = x[i, h_ind:h_ind+h, w_ind:w_ind+w, :]
 
-    return x
+    return X
 
 
 def feature_scale(x):
