@@ -117,7 +117,7 @@ def create_framestack(x, y, f_args):
     return np.asarray(X_), np.asarray(Y_)
 
 
-def random_crop(x, padlen=25):
+def random_crop(x, padlen=16):
     h, w = x.shape[1], x.shape[2]
     
     for i in range(x.shape[0]):
@@ -216,7 +216,7 @@ for i in range(training_iterations):
         X, Y = create_framestack(X, Y, stack_nums)
 
     # random crop for augmentation
-    X = random_crop(X, 26)
+    X = random_crop(X)
 
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
