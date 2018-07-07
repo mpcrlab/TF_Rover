@@ -10,14 +10,6 @@ from tflearn.layers.normalization import local_response_normalization, batch_nor
 from tflearn.layers.estimator import regression
 from tflearn import residual_bottleneck, activation, global_avg_pool, merge
 
-drop_prob = sys.argv[1]
-
-def cosine_sim(x, y):
-    a = tf.matmul(tf.transpose(x), y)
-    xnorm = tf.norm(x, 2, axis=0)
-    ynorm = tf.norm(y, 2, axis=0)
-    return tf.divide(a, tf.multiply(xnorm, ynorm))
-
 
 def x3(x):
     return 0.3*x**3
@@ -40,7 +32,7 @@ def whiten(X):
 
 
 ########################################################
-def DNN1(network):
+def DNN1(network, drop_prob=1.0):
     
     network = tflearn.fully_connected(network, 64, activation='tanh',regularizer='L2', weight_decay=0.001)
     network = tflearn.dropout(network, drop_prob)
@@ -55,7 +47,7 @@ def DNN1(network):
 
 
 ########################################################
-def Conv1(network):
+def Conv1(network, drop_prob=1.0):
     
     network = conv_2d(network, 32, 3, activation='relu', regularizer="L2")
     network = max_pool_2d(network, 2)
@@ -76,7 +68,7 @@ def Conv1(network):
 
 
 ########################################################
-def Alex1(network):
+def Alex1(network, drop_prob=1.0):
         
     network = conv_2d(network, 96, 11, strides=4, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
@@ -102,7 +94,7 @@ def Alex1(network):
 
 
 ########################################################
-def VGG1(network):
+def VGG1(network, drop_prob=1.0):
         
     network = conv_2d(network, 45, 3, activation='relu')
     network = conv_2d(network, 45, 3, activation='relu')
@@ -139,7 +131,7 @@ def VGG1(network):
 
 
 ########################################################
-def Highway1(network):
+def Highway1(network, drop_prob=1.0):
         
     dense1 = tflearn.fully_connected(network, 64, activation='elu', regularizer='L2', weight_decay=0.001)
 
@@ -154,7 +146,7 @@ def Highway1(network):
 
 
 ########################################################
-def ConvHighway1(network):
+def ConvHighway1(network, drop_prob=1.0):
         
     for i in range(3):
         for j in [3, 2, 1]: 
@@ -172,7 +164,7 @@ def ConvHighway1(network):
 
 
 ########################################################
-def Net_in_Net1(network):
+def Net_in_Net1(network, drop_prob=1.0):
         
     network = conv_2d(network, 192, 5, activation='relu')
     network = conv_2d(network, 160, 1, activation='relu')
@@ -198,7 +190,7 @@ def Net_in_Net1(network):
 
 
 ########################################################
-def ResNet26(network):
+def ResNet26(network, drop_prob=1.0):
     n = 2 # number of residual blocks per layer
     
     network = tflearn.conv_2d(network, 32, 7, regularizer='L2', strides=2, activation='relu')  
