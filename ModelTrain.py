@@ -80,7 +80,7 @@ if pt:
     network = input_data(shape=[None, 130, 320, channs])
     modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-6]
     assert(modelFind == modelswitch[model_num].__name__), 'different models'
-    net_out = globals()[modelFind](network)
+    net_out = globals()[modelFind](network, dropout_keep_prob)
     model = tflearn.DNN(network)
     model.load(fileName[:-6])
 
