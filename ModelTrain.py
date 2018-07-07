@@ -117,16 +117,15 @@ def create_framestack(x, y, f_args):
     return np.asarray(X_), np.asarray(Y_)
 
 
-def random_crop(x, padlen=15):
+def random_crop(x, padlen=25):
     h, w = x.shape[1], x.shape[2]
-    X = np.zeros(x.shape)
-    x = np.pad(x, ((0,0),(padlen, padlen),(padlen,padlen),(0,0)), 'constant')
     
     for i in range(x.shape[0]):
-        h_ind, w_ind = np.random.randint(0, padlen*2, 2)
-        X[i,...] = x[i,h_ind:h_ind+h, w_ind:w_ind+w, :]
+        h_ind, w_ind = np.random.randint(0, padlen, 2)
+        im = imresize(x[i,...], [h+padlen//2, w+padlen//2])
+        x[i,...] = im[h_ind:h_ind+h, w_ind:w_ind+w, :]
 
-    return X
+    return x
 
 
 def feature_scale(x):
@@ -217,7 +216,7 @@ for i in range(training_iterations):
         X, Y = create_framestack(X, Y, stack_nums)
 
     # random crop for augmentation
-    X = random_crop(X)
+    X = random_crop(X, 25)
 
     # Training
     model.fit_batch(feed_dicts={network:X, labels:Y})
