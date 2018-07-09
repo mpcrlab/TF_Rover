@@ -89,7 +89,7 @@ if pt:
 os.system('tensorboard --logdir=/tmp/tflearn_logs/ &')
 
 # define useful variables
-os.chdir('/home/TF_Rover/RoverData/Right2')
+os.chdir(os.path.join(os.getcwd(), 'RoverData/Right2'))
 fnames = glob.glob('*.h5') # datasets to train on
 batch_sz = 150  # training batch size
 val_name = 'Run_218seconds_Michael_Sheri.h5' # Dataset to use for validation
