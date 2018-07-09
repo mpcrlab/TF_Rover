@@ -21,40 +21,40 @@ tf.reset_default_graph()
 
 class RoverRun(Rover):
 
-    def __init__(self, filename):
+    def __init__(self, fileName, network_name):
         Rover.__init__(self)
         self.d = Data()
         self.userInterface = Pygame_UI()
         self.clock = pygame.time.Clock()
         self.FPS = 30
         self.image = None
+        self.network_name = network_name
         self.quit = False
         self.paused = False
         self.angle = 0
         self.treads = [0,0]
         self.timeStart = time.time()
-	self.filename = filename	
+	self.filename = fileName	
         #fileName = glob.glob('/home/TF_Rover/RoverData/*.index')
 	#fileName = fileName[0]
 	
-	if '1frame_Color' in fileName:
+	if '1frame_Color' in self.filename:
 	    self.channs = 3
 	    self.im_method = 0
-	elif '3frames' in fileName:
+	elif '3frames' in self.filename:
 	    self.channs = 3
 	    self.im_method = 1
 	    self.framestack = np.zeros([1, 130, 320, self.FPS])
 	    self.stack = [0, 5, 15]
-        elif '1frame_Gray' in fileName:
+        elif '1frame_Gray' in self.filename:
 	    self.channs = 1
 	    self.im_method = 2
 
-	self.network = input_data(shape=[None, 130, 320, self.channs])
 
-	modelFind = fileName[fileName.find('_', 64, len(fileName))+1:-5]
-	self.network = globals()[modelFind](self.network, drop_prob=1.0)
+	self.network = input_data(shape=[None, 130, 320, self.channs])
+	self.network = self.network_name(self.network, drop_prob=1.0)
 	self.model = tflearn.DNN(self.network)
-	self.model.load(fileName[:-6])
+	self.model.load(self.filename)
 	self.run()
 
 
@@ -73,18 +73,6 @@ class RoverRun(Rover):
         self.image = cv2.imdecode(array_of_bytes, flags=3)
         k = cv2.waitKey(5) & 0xFF
         return self.image
-
-
-
-    def eraseFrames(self, count):
-        size = len(self.d.angles)
-        if (size - count > 0):
-            print("--", "Deleting" , count, "seconds of frames!")
-            self.d.angles = self.d.angles[:size - count]
-            self.d.images = self.d.images[:size - count]
-        else:
-            print("Couldn't delete! List has less than", count, "frames!")
-
 
 
     def run(self):
