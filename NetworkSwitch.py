@@ -246,7 +246,7 @@ def LSTM1(network):
 
 
 ########################################################
-def GoogLeNet1(network):
+def GoogLeNet1(network, drop_prob):
         
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name = 'conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3,strides=2)
