@@ -153,7 +153,7 @@ def batch_get(filename, batch_size, channs, num_classes):
         y[count, int(Y[r] + 1.0)] = 1.0
         count += 1
     
-    if channs == 1:
+    if im_method in [1, 2]:
         X = np.mean(X, 3, keepdims=True) # grayscale and crop frames
         
     assert(X.shape[0] == Y.shape[0]), 'Data and labels different sizes'
