@@ -17,6 +17,7 @@ import scipy.misc
 from NetworkSwitch import *
 import tensorflow as tf
 tf.reset_default_graph()
+tflearn.config.init_training_mode()
 
 
 class RoverRun(Rover):
